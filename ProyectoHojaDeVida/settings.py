@@ -83,13 +83,12 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Definimos el backend de medios sin registrar la variable global DEFAULT_FILE_STORAGE
+# Usamos una variable auxiliar para evitar el error "mutually exclusive"
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
     media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
     media_backend = 'django.core.files.storage.FileSystemStorage'
 
-# Configuración ÚNICA de Storages para Django 4.2+
 STORAGES = {
     "default": {
         "BACKEND": media_backend,
