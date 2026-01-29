@@ -1,21 +1,15 @@
 #!/usr/bin/env bash
+# exit on error
 set -o errexit
 
 pip install -r requirements.txt
+
 python manage.py collectstatic --no-input
 python manage.py migrate
 
-# --- LIMPIEZA DESACTIVADA ---
-# Se comentan estas líneas para que no borren tus datos reales en el futuro
-# echo "from django.contrib.admin.models import LogEntry; \
-# from Perfil.models import DatosPersonales; \
-# LogEntry.objects.all().delete(); \
-# DatosPersonales.objects.all().delete();" \
-# | python manage.py shell
-
-# Crear/Asegurar superusuario (Esto sí se deja siempre)
+# Crear superusuario solo si no existe
 echo "from django.contrib.auth import get_user_model; \
 User = get_user_model(); \
 User.objects.filter(username='Alex').exists() or \
-User.objects.create_superuser('Alex', 'Alex@gmail.com', '123456')" \
+User.objects.create_superuser('Alex', 'alexaragundi3050@gmail.com', '123456')" \
 | python manage.py shell
