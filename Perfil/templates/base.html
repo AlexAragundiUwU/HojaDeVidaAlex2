@@ -1,0 +1,434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Portafolio{% endblock %} | Perfil Profesional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Fuentes Tecnológicas -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap y Iconos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            /* --- COLORES CYBERPUNK --- */
+            /* Esta variable ahora será dinámica */
+            --neon-green: #00ff41;       
+            
+            --bg-body: #050505;          
+            --sidebar-bg: #000000;       
+            --text-main: #e0e0e0;        
+            
+            /* Dimensiones */
+            --sidebar-width-collapsed: 80px;
+            --sidebar-width-expanded: 260px;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* === CORTINA DE TRANSICIÓN (PANTALLA COMPLETA) === */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .loader-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cubre toda la pantalla sin bordes negros */
+            display: block;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 3px solid var(--neon-green); 
+            box-shadow: 5px 0 20px var(--neon-green); 
+            border-radius: 0px !important;
+            transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s;
+            width: var(--sidebar-width-collapsed);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 992px) {
+            .sidebar:hover {
+                width: var(--sidebar-width-expanded);
+                box-shadow: 10px 0 30px var(--neon-green);
+            }
+        }
+
+        .sidebar-sticky {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* --- LOGO / MARCA --- */
+        .sidebar-brand {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            color: var(--neon-green);
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-bottom: 2px solid var(--neon-green); 
+            background: #000;
+            text-shadow: 0 0 10px var(--neon-green);
+            transition: color 0.3s, border-color 0.3s, text-shadow 0.3s;
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            min-width: 30px; 
+            margin-right: 18px;
+            text-align: center;
+        }
+
+        .brand-text, .link-text {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            visibility: hidden;
+        }
+
+        .sidebar:hover .brand-text, 
+        .sidebar:hover .link-text,
+        .sidebar:hover .sidebar-heading {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- ENLACES --- */
+        .nav-link {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            color: #888 !important;
+            padding: 0 1.5rem;
+            transition: all 0.2s;
+            border-left: 4px solid transparent; 
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-link i {
+            color: #444; 
+            font-size: 1.5rem;
+            min-width: 30px;
+            text-align: center;
+            margin-right: 18px;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--neon-green);
+            color: #fff !important;
+            text-shadow: 0 0 5px var(--neon-green);
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .sidebar-heading {
+            padding: 1.5rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #666;
+            opacity: 0;
+            transition: 0.3s;
+            white-space: nowrap;
+            letter-spacing: 2px;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            margin-left: var(--sidebar-width-collapsed);
+            padding: 2rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+            width: calc(100% - var(--sidebar-width-collapsed));
+        }
+
+        footer {
+            border-top: 1px solid #222;
+            color: #666;
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+
+        /* === BOTÓN SELECTOR DE COLOR === */
+        .color-picker-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            flex-shrink: 0;
+            overflow: hidden;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            background: #000;
+        }
+        .color-picker-container:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+        .color-picker-container input[type="color"] {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .color-picker-container i {
+            font-size: 1.2rem;
+            color: #666;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .color-picker-container:hover i {
+            color: var(--neon-green);
+        }
+
+        /* --- MÓVIL --- */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                width: 100% !important;
+                height: auto;
+                position: relative;
+                white-space: normal;
+                overflow: visible;
+                border-right: none;
+                border-bottom: 3px solid var(--neon-green);
+            }
+            .sidebar-sticky { height: auto; }
+            .brand-text, .link-text, .sidebar-heading { opacity: 1; visibility: visible; }
+            .main-content { 
+                margin-left: 0; 
+                width: 100%;
+                padding: 1rem;
+            }
+            .sidebar-brand { justify-content: center; }
+            .navbar-toggler { border-color: var(--neon-green); }
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CORTINA DE TRANSICIÓN (PANTALLA COMPLETA) -->
+    <div id="page-loader">
+        <div class="loader-content">
+            <img src="{% static 'img/transition.gif' %}" alt="Cargando sistema...">
+        </div>
+    </div>
+
+    <!-- MENÚ LATERAL -->
+    <nav id="sidebarMenu" class="sidebar collapse d-lg-block">
+        <div class="sidebar-sticky">
+            <a class="sidebar-brand" href="{% url 'home' %}">
+                <i class="bi bi-cpu-fill"></i>
+                <span class="brand-text">HOJA DE VIDA</span>
+            </a>
+            
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'home' %}">
+                        <i class="bi bi-terminal"></i>
+                        <span class="link-text">Inicio</span>
+                    </a>
+                </li>
+                {% if perfil.mostrar_experiencia %}
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'experiencia' %}">
+                        <i class="bi bi-briefcase"></i>
+                        <span class="link-text">Experiencia</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if perfil.mostrar_academicos %}
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'productos_academicos' %}">
+                        <i class="bi bi-journal-code"></i>
+                        <span class="link-text">Académico</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if perfil.mostrar_proyectos %}
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'productos_laborales' %}">
+                        <i class="bi bi-kanban"></i>
+                        <span class="link-text">Proyectos</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if perfil.mostrar_cursos %}
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'cursos' %}">
+                        <i class="bi bi-mortarboard"></i>
+                        <span class="link-text">Cursos</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if perfil.mostrar_logros %}
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'reconocimientos' %}">
+                        <i class="bi bi-trophy"></i>
+                        <span class="link-text">Logros</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <h6 class="sidebar-heading">Add-ons</h6>
+            <ul class="nav flex-column mb-2">
+                {% if perfil.mostrar_garage %}
+                <li class="nav-item">
+                    <a class="nav-link transition-link" href="{% url 'garage' %}">
+                        <i class="bi bi-shop"></i>
+                        <span class="link-text">Garaje</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <!-- ZONA INFERIOR: ADMIN Y COLOR PICKER (APILADOS VERTICALMENTE) -->
+            <div class="mt-auto pb-4 w-100 d-flex flex-column align-items-center gap-3">
+                
+                <!-- BOTÓN PARA CAMBIAR COLOR (Arriba) -->
+                <div class="color-picker-container" title="Cambiar Color del Tema">
+                    <i class="bi bi-palette-fill"></i>
+                    <input type="color" id="themePicker" value="#00ff41">
+                </div>
+
+                <!-- BOTÓN ADMIN (Abajo) -->
+                <a href="/admin/" style="color: #444; font-size: 1.5rem; text-decoration: none; transition: 0.3s;" title="Panel Admin">
+                    <i class="bi bi-gear-fill"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ÁREA DE CONTENIDO -->
+    <main class="main-content">
+        <nav class="navbar navbar-dark bg-black d-lg-none mb-4 p-3 border-bottom border-success">
+            <span class="navbar-brand mb-0 h1 text-success" style="font-family: 'Roboto Mono'">HOJA_DE_VIDA</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </nav>
+
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
+        
+        <footer class="text-center small mt-5">
+            <span style="font-family: 'Roboto Mono'">© 2025 {{ perfil.nombres|default:'Alex' }} {{ perfil.apellidos|default:'Aragundi' }} // STATUS: ONLINE</span>
+        </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SCRIPT: TRANSICIÓN Y CAMBIO DE COLOR -->
+    <script>
+        // 1. TRANSICIÓN DE PÁGINA
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('page-loader');
+            // Carga de colores guardados
+            const savedColor = localStorage.getItem('themeColor');
+            if (savedColor) {
+                document.documentElement.style.setProperty('--neon-green', savedColor);
+                const picker = document.getElementById('themePicker');
+                if (picker) picker.value = savedColor;
+            }
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500); 
+            }, 1000); 
+        });
+
+        document.querySelectorAll('.transition-link, .btn-link-cyber').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetUrl = this.href;
+                const loader = document.getElementById('page-loader');
+                loader.style.display = 'flex';
+                requestAnimationFrame(() => { loader.style.opacity = '1'; });
+                setTimeout(() => { window.location.href = targetUrl; }, 1500); 
+            });
+        });
+
+        // 2. LÓGICA DE CAMBIO DE COLOR
+        const themePicker = document.getElementById('themePicker');
+        if (themePicker) {
+            themePicker.addEventListener('input', function(e) {
+                const newColor = e.target.value;
+                document.documentElement.style.setProperty('--neon-green', newColor);
+                localStorage.setItem('themeColor', newColor);
+            });
+        }
+    </script>
+</body>
+</html>

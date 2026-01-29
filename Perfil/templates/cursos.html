@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cursos | {{ perfil.nombres }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos Cyberpunk para Cursos */
+    :root {
+        --neon-green: #00ff41;
+        --dark-bg: #0a0a0a;
+        --card-bg: #0d0d0d;
+        --text-muted: #888;
+    }
+
+    /* Encabezado */
+    .page-header { 
+        background: var(--dark-bg); 
+        padding: 2rem; 
+        border: 1px solid #333;
+        border-left: 5px solid var(--neon-green); 
+        margin-bottom: 2rem; 
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+    }
+
+    h1 {
+        color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    /* Lista de Cursos */
+    .course-list-container {
+        max-height: 700px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    /* Scrollbar personalizado */
+    .course-list-container::-webkit-scrollbar { width: 5px; }
+    .course-list-container::-webkit-scrollbar-thumb { background: #333; }
+    .course-list-container::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
+
+    .course-card { 
+        background: var(--card-bg); 
+        border: 1px solid #333;
+        border-radius: 4px; 
+        padding: 15px;
+        margin-bottom: 12px;
+        cursor: pointer; 
+        transition: 0.3s; 
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-card:hover, .course-card.active { 
+        border-color: var(--neon-green);
+        box-shadow: 0 0 15px rgba(0, 255, 65, 0.1); 
+        background: #111;
+    }
+
+    /* Indicador activo */
+    .course-card.active::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: var(--neon-green);
+    }
+
+    .course-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+
+    .course-inst {
+        color: var(--neon-green);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.85rem;
+    }
+
+    /* Visor */
+    .cert-viewer { 
+        background: #000; 
+        border: 1px solid #333; 
+        border-radius: 4px; 
+        height: 600px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .pdf-embed {
+        width: 100%;
+        height: 100%;
+        display: none;
+        border: none;
+    }
+    
+    .cert-img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #444;
+    }
+
+    /* Caja de detalles */
+    .course-detail-box {
+        margin-top: 15px;
+        padding: 1.5rem;
+        background: var(--dark-bg);
+        border: 1px solid #333;
+        border-top: 2px solid var(--neon-green);
+        display: none;
+    }
+
+    .btn-download {
+        background: transparent;
+        color: var(--neon-green);
+        border: 1px solid var(--neon-green);
+        padding: 8px 20px;
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-download:hover {
+        background: var(--neon-green);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-green);
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="mb-1"><i class="bi bi-mortarboard-fill me-2"></i> Cursos y Formación</h1>
+    <p class="text-muted mb-0" style="font-family: 'Roboto Mono'">Certificaciones técnicas y habilidades adquiridas.</p>
+</div>
+
+<div class="row">
+    <!-- COLUMNA IZQUIERDA: LISTA DE CURSOS (DINÁMICA) -->
+    <div class="col-lg-4 course-list-container">
+        
+        <!-- BUCLE DE DJANGO: Lee desde la base de datos -->
+        {% for curso in datos %}
+        <div class="course-card" onclick="mostrarCertificado('{% if curso.rutacertificado %}{{ curso.rutacertificado.url }}{% endif %}', '{{ curso.nombrecurso }}', '{{ curso.entidadpatrocinadora }}', '{{ curso.descripcioncurso }}', '{{ curso.totalhoras }}')">
+            <div class="course-title">{{ curso.nombrecurso }}</div>
+            <div class="course-inst">{{ curso.entidadpatrocinadora }}</div>
+            <div class="mt-2 small text-muted" style="font-family: 'Roboto Mono'">
+                <i class="bi bi-clock me-1"></i> {{ curso.totalhoras }} Horas
+                {% if curso.fechafin %} | {{ curso.fechafin|date:"Y" }} {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <!-- Mensaje si no hay cursos -->
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-folder-x fs-1 opacity-50"></i>
+            <p class="mt-3 small">No hay cursos registrados en el sistema.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- COLUMNA DERECHA: VISOR -->
+    <div class="col-lg-8">
+        <div class="cert-viewer">
+            <div id="emptyMsg" class="empty-state">
+                <i class="bi bi-file-earmark-pdf text-secondary" style="font-size: 3rem;"></i>
+                <p class="mt-3" style="font-family: 'Roboto Mono'">SELECCIONA UN CURSO PARA VER EL CERTIFICADO</p>
+            </div>
+            
+            <!-- Visor PDF e Imagen -->
+            <iframe id="pdfViewer" src="" class="pdf-embed"></iframe>
+            <img id="imgViewer" src="" class="cert-img">
+        </div>
+
+        <div id="detailBox" class="course-detail-box shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <h4 id="titleDisplay" class="fw-bold mb-0 text-white" style="font-family: 'Rajdhani'"></h4>
+                    <small id="instDisplay" class="text-success" style="font-family: 'Roboto Mono'"></small>
+                </div>
+                <a id="downloadLink" href="#" class="btn-download" download target="_blank">
+                    <i class="bi bi-download me-2"></i> Descargar
+                </a>
+            </div>
+            <hr style="border-color: #333;">
+            <p id="textDisplay" class="text-muted mb-0 small"></p>
+            <p id="timeDisplay" class="mt-2 small text-success" style="font-family: 'Roboto Mono'"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarCertificado(url, titulo, institucion, desc, duracion) {
+        // Referencias a elementos
+        const pdfViewer = document.getElementById('pdfViewer');
+        const imgViewer = document.getElementById('imgViewer');
+        const emptyMsg = document.getElementById('emptyMsg');
+        const detailBox = document.getElementById('detailBox');
+        
+        const titleDisplay = document.getElementById('titleDisplay');
+        const instDisplay = document.getElementById('instDisplay');
+        const textDisplay = document.getElementById('textDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const downloadLink = document.getElementById('downloadLink');
+
+        // Resetear visualización
+        emptyMsg.style.display = 'none';
+        pdfViewer.style.display = 'none';
+        imgViewer.style.display = 'none';
+        detailBox.style.display = 'none';
+
+        if (url && url !== 'None' && url !== '') {
+            // Determinar si es PDF o Imagen
+            if (url.toLowerCase().endsWith('.pdf')) {
+                pdfViewer.src = url;
+                pdfViewer.style.display = 'block';
+            } else {
+                imgViewer.src = url;
+                imgViewer.style.display = 'block';
+            }
+            
+            // Mostrar detalles
+            detailBox.style.display = 'block';
+            titleDisplay.innerText = titulo;
+            instDisplay.innerText = institucion;
+            textDisplay.innerText = desc;
+            timeDisplay.innerText = "Duración: " + duracion + " Horas";
+            downloadLink.href = url;
+            downloadLink.style.display = 'inline-block';
+        } else {
+            // Si no hay archivo, mostrar mensaje
+            emptyMsg.style.display = 'block';
+            emptyMsg.innerHTML = '<i class="bi bi-exclamation-circle text-secondary fs-1"></i><p class="mt-3">Certificado no disponible</p>';
+            
+            // Aún mostramos la info aunque no haya archivo
+            detailBox.style.display = 'block';
+            titleDisplay.innerText = titulo;
+            instDisplay.innerText = institucion;
+            textDisplay.innerText = desc;
+            timeDisplay.innerText = "Duración: " + duracion + " Horas";
+            downloadLink.style.display = 'none';
+        }
+
+        // Marcar tarjeta activa
+        document.querySelectorAll('.course-card').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+</script>
+{% endblock %}

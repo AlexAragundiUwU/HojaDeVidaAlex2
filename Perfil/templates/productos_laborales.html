@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Proyectos | {{ perfil.nombres }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos Cyberpunk para Proyectos */
+    :root {
+        --neon-green: #00ff41;
+        --dark-bg: #0a0a0a;
+        --card-bg: #0d0d0d;
+        --text-muted: #888;
+    }
+
+    .page-header {
+        background: var(--dark-bg);
+        padding: 2rem;
+        border: 1px solid #333;
+        border-left: 5px solid var(--neon-green);
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+    }
+
+    h1 {
+        color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    /* Tarjeta de Proyecto */
+    .project-card {
+        background: var(--card-bg);
+        border: 1px solid #333;
+        border-radius: 4px;
+        overflow: hidden;
+        transition: 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .project-card:hover {
+        border-color: var(--neon-green);
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        transform: translateY(-5px);
+    }
+
+    /* Cabecera estilo Terminal */
+    .project-header {
+        background: #151515;
+        padding: 10px 15px;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .terminal-dots span {
+        height: 10px;
+        width: 10px;
+        background-color: #555;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .project-card:hover .terminal-dots span:nth-child(1) { background-color: #ff5f56; }
+    .project-card:hover .terminal-dots span:nth-child(2) { background-color: #ffbd2e; }
+    .project-card:hover .terminal-dots span:nth-child(3) { background-color: #27c93f; }
+
+    .project-date {
+        font-family: 'Roboto Mono', monospace;
+        color: var(--neon-green);
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    /* Área de Imagen */
+    .project-img-container {
+        height: 200px;
+        width: 100%;
+        overflow: hidden;
+        border-bottom: 1px solid #333;
+        background: #000;
+        position: relative;
+    }
+
+    .project-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        opacity: 0.9;
+    }
+
+    .project-card:hover .project-img {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    /* Fallback si no hay imagen */
+    .no-image-placeholder {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+        color: #333;
+        font-family: 'Roboto Mono', monospace;
+        flex-direction: column;
+    }
+
+    .no-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        color: #444;
+    }
+
+    /* Cuerpo */
+    .project-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        letter-spacing: 1px;
+    }
+
+    .project-desc {
+        font-family: 'Roboto Mono', monospace;
+        color: #aaa;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .status-badge {
+        margin-top: auto;
+        border-top: 1px dashed #333;
+        padding-top: 15px;
+        display: flex;
+        align-items: center;
+        color: var(--neon-green);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.75rem;
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="mb-1"><i class="bi bi-cpu-fill me-2"></i> Portafolio de Proyectos</h1>
+    <p class="text-muted mb-0" style="font-family: 'Roboto Mono'">Despliegues técnicos y soluciones implementadas.</p>
+</div>
+
+<div class="row g-4">
+    
+    <!-- BUCLE DINÁMICO: Carga proyectos desde la BD -->
+    {% for item in datos %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card project-card">
+            
+            <!-- 1. Cabecera Terminal -->
+            <div class="project-header">
+                <div class="terminal-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="project-date">
+                    <i class="bi bi-calendar3 me-1"></i> {{ item.fechaproducto|date:"Y" }}
+                </div>
+            </div>
+
+            <!-- 2. Imagen del Proyecto (Si existe) -->
+            {% if item.imagen %}
+                <div class="project-img-container">
+                    <img src="{{ item.imagen.url }}" alt="{{ item.nombreproducto }}" class="project-img">
+                </div>
+            {% else %}
+                <!-- Si no hay imagen, muestra un diseño técnico por defecto -->
+                <div class="no-image-placeholder">
+                    <i class="bi bi-code-slash"></i>
+                    <span>&lt;NO_IMAGE /&gt;</span>
+                </div>
+            {% endif %}
+
+            <!-- 3. Contenido -->
+            <div class="project-body">
+                <h3 class="project-title">
+                    {{ item.nombreproducto }}
+                </h3>
+                
+                <p class="project-desc">
+                    {{ item.descripcion }}
+                </p>
+
+                <div class="status-badge">
+                    <i class="bi bi-terminal me-2"></i>
+                    STATUS: DEPLOYED
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <!-- Mensaje si no hay proyectos -->
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-folder-x text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+        <p class="text-muted mt-3" style="font-family: 'Roboto Mono'">No hay proyectos registrados en el sistema.</p>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

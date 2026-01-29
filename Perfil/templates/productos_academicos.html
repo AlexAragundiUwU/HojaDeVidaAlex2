@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Académico | {{ perfil.nombres }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos Cyberpunk para Académico */
+    :root {
+        --neon-green: #00ff41; /* Verde Neón Brillante */
+        --dark-bg: #0a0a0a;
+        --card-bg: #0d0d0d;
+        --text-muted: #888;
+    }
+
+    .page-header {
+        background: var(--dark-bg);
+        padding: 2rem;
+        border: 1px solid #333;
+        border-left: 5px solid var(--neon-green);
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+    }
+
+    h1 {
+        color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    /* Tarjetas Académicas */
+    .academic-card {
+        background: var(--card-bg);
+        border: 1px solid #333;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .academic-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+        border-color: var(--neon-green);
+    }
+
+    /* Línea decorativa lateral */
+    .academic-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 4px; height: 100%;
+        background: var(--neon-green);
+        box-shadow: 0 0 10px var(--neon-green);
+    }
+
+    .clasificador-tag {
+        background-color: rgba(0, 255, 65, 0.1);
+        color: var(--neon-green);
+        border: 1px solid var(--neon-green);
+        font-size: 0.75rem;
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        display: inline-block;
+        margin-bottom: 15px;
+        box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
+    }
+
+    .resource-icon {
+        font-size: 2.5rem;
+        color: #333;
+        transition: 0.3s;
+        margin-bottom: 15px;
+    }
+
+    .academic-card:hover .resource-icon {
+        color: var(--neon-green);
+        text-shadow: 0 0 10px var(--neon-green);
+    }
+
+    .academic-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 10px;
+    }
+
+    .academic-desc {
+        font-family: 'Roboto Mono', sans-serif;
+        font-size: 0.9rem;
+        color: #aaa;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+
+    .card-footer-custom {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #222;
+        text-align: right;
+    }
+
+    .status-text {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--neon-green);
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="mb-0"><i class="bi bi-journal-code me-2 text-success"></i> Formación Académica</h1>
+    <p class="text-muted mb-0 mt-2" style="font-family: 'Roboto Mono'">Repositorio de recursos y estudios realizados.</p>
+</div>
+
+<!-- SECCIÓN: RECURSOS Y PROYECTOS ACADÉMICOS (DINÁMICO) -->
+<div class="row">
+    <!-- Usamos directamente 'datos' que viene de tu vista de Django -->
+    {% for producto in datos %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="academic-card p-4">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="resource-icon">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+                <span class="clasificador-tag">
+                    {{ producto.clasificador }}
+                </span>
+            </div>
+            
+            <h5 class="academic-title">{{ producto.nombrerecurso }}</h5>
+            <p class="academic-desc">
+                {{ producto.descripcion }}
+            </p>
+            
+            <div class="card-footer-custom">
+                <span class="status-text">
+                    <i class="bi bi-check-circle me-1"></i> VERIFICADO
+                </span>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div class="p-4" style="background: #0d0d0d; border: 1px dashed #333; border-radius: 4px;">
+            <i class="bi bi-folder2-open display-1 text-secondary opacity-25"></i>
+            <p class="text-muted mt-3" style="font-family: 'Roboto Mono'">
+                No hay registros visibles.
+            </p>
+            <small class="text-secondary">
+                Verifica en el panel /admin que has agregado items en <strong>Productos Academicos</strong> 
+                y que están vinculados a tu <strong>Perfil Activo</strong>.
+            </small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

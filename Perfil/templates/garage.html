@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Garaje | {{ perfil.nombres }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos Cyberpunk para Garaje */
+    :root {
+        --neon-green: #00ff41;
+        --dark-bg: #0a0a0a;
+        --card-bg: #0d0d0d;
+    }
+
+    .page-header {
+        background: var(--dark-bg);
+        padding: 2rem;
+        border: 1px solid #333;
+        border-left: 5px solid var(--neon-green);
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+    }
+
+    h1 {
+        color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    }
+
+    /* Lista de Productos */
+    .product-list-container {
+        max-height: 700px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    /* Scrollbar */
+    .product-list-container::-webkit-scrollbar { width: 5px; }
+    .product-list-container::-webkit-scrollbar-thumb { background: #333; }
+    .product-list-container::-webkit-scrollbar-thumb:hover { background: var(--neon-green); }
+
+    .product-card {
+        background: var(--card-bg);
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .product-card:hover, .product-card.active {
+        border-color: var(--neon-green);
+        box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+        background: #111;
+    }
+
+    /* Indicador activo */
+    .product-card.active::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: var(--neon-green);
+    }
+
+    .product-name {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+
+    .product-price-mini {
+        color: var(--neon-green);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    /* Visor */
+    .product-viewer {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 4px;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .product-img-display {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #444;
+    }
+
+    /* Caja de detalles */
+    .product-detail-box {
+        margin-top: 15px;
+        padding: 1.5rem;
+        background: var(--dark-bg);
+        border: 1px solid #333;
+        border-top: 2px solid var(--neon-green);
+        display: none;
+    }
+
+    .price-display {
+        font-family: 'Roboto Mono', monospace;
+        color: var(--neon-green);
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.4);
+    }
+
+    .btn-buy {
+        background: transparent;
+        color: #fff;
+        border: 1px solid #fff;
+        padding: 8px 25px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-buy:hover {
+        background: #fff;
+        color: #000;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="mb-1"><i class="bi bi-shop me-2 text-success"></i> Venta de Garaje</h1>
+    <p class="text-muted mb-0" style="font-family: 'Roboto Mono'">Marketplace personal: Artículos disponibles.</p>
+</div>
+
+<div class="row">
+    <!-- COLUMNA IZQUIERDA: LISTA DE PRODUCTOS -->
+    <div class="col-lg-4 product-list-container">
+        
+        <!-- BUCLE DJANGO: Lee desde la tabla VentaGarage -->
+        {% for item in datos %}
+        <div class="product-card" onclick="mostrarProducto('{% if item.documento_interes %}{{ item.documento_interes.url }}{% endif %}', '{{ item.nombreproducto }}', '${{ item.valordelbien }}', '{{ item.descripcion|escapejs }}', '{{ item.estadoproducto }}')">
+            <div class="product-name">{{ item.nombreproducto }}</div>
+            <div class="product-price-mini">${{ item.valordelbien }}</div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-box-seam fs-1 opacity-50"></i>
+            <p class="mt-3 small">No hay artículos a la venta.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- COLUMNA DERECHA: VISOR -->
+    <div class="col-lg-8">
+        <div class="product-viewer">
+            <div id="emptyMsg" class="text-center text-muted">
+                <i class="bi bi-bag-check fs-1"></i>
+                <p class="mt-3" style="font-family: 'Roboto Mono'">SELECCIONA UN ARTÍCULO</p>
+            </div>
+            
+            <img id="productImg" src="" class="product-img-display" alt="Producto">
+        </div>
+
+        <div id="detailBox" class="product-detail-box shadow-sm">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h3 id="titleDisplay" class="text-white fw-bold mb-1" style="font-family: 'Rajdhani'"></h3>
+                    <div class="d-flex align-items-center gap-3">
+                        <div id="priceDisplay" class="price-display"></div>
+                        <span id="statusDisplay" class="badge border border-secondary text-secondary bg-transparent"></span>
+                    </div>
+                </div>
+                <!-- Enlace a WhatsApp usando el número del perfil -->
+                <a href="https://wa.me/593{{ perfil.telefonoconvencional|default:'986733959' }}?text=Hola,%20me%20interesa%20el%20articulo%20de%20la%20venta%20de%20garaje" target="_blank" class="btn-buy">
+                    <i class="bi bi-whatsapp me-2"></i>Me interesa
+                </a>
+            </div>
+            <hr style="border-color: #333;">
+            <p id="descDisplay" class="text-muted mb-0" style="line-height: 1.6;"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarProducto(url, titulo, precio, descripcion, estado) {
+        const img = document.getElementById('productImg');
+        const empty = document.getElementById('emptyMsg');
+        const box = document.getElementById('detailBox');
+        
+        document.getElementById('titleDisplay').innerText = titulo;
+        document.getElementById('priceDisplay').innerText = precio;
+        document.getElementById('descDisplay').innerText = descripcion;
+        document.getElementById('statusDisplay').innerText = estado;
+
+        empty.style.display = 'none';
+        
+        if (url && url !== 'None' && url !== '') {
+            img.src = url;
+            img.style.display = 'block';
+        } else {
+            img.style.display = 'none';
+            empty.style.display = 'block';
+            empty.innerHTML = '<i class="bi bi-image text-secondary fs-1"></i><p class="mt-3">Sin foto del producto</p>';
+        }
+        
+        box.style.display = 'block';
+        document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+</script>
+{% endblock %}

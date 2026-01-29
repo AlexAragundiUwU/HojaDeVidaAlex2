@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Logros | {{ perfil.nombres }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos Cyberpunk para Reconocimientos */
+    :root {
+        --neon-green: #00ff41;
+        --dark-bg: #0a0a0a;
+        --card-bg: #0d0d0d;
+        --gold: #ffc107; /* Color dorado para resaltar trofeos */
+    }
+
+    .page-header {
+        background: var(--dark-bg);
+        padding: 2rem;
+        border: 1px solid #333;
+        border-left: 5px solid var(--gold); /* Borde dorado */
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.05);
+    }
+
+    h1 {
+        color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 5px rgba(255, 193, 7, 0.3);
+    }
+
+    /* Lista */
+    .award-list-container {
+        max-height: 700px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    .award-list-container::-webkit-scrollbar { width: 5px; }
+    .award-list-container::-webkit-scrollbar-thumb { background: #333; }
+    .award-list-container::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+    .award-card {
+        background: var(--card-bg);
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .award-card:hover, .award-card.active {
+        border-color: var(--gold);
+        box-shadow: 0 0 15px rgba(255, 193, 7, 0.1);
+        background: #111;
+    }
+
+    .award-card.active::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold);
+    }
+
+    .award-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+
+    .award-inst {
+        color: var(--gold);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.85rem;
+    }
+
+    /* Visor */
+    .cert-viewer {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 4px;
+        height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .pdf-embed, .cert-img {
+        width: 100%; height: 100%; display: none; border: none; object-fit: contain;
+    }
+
+    .award-detail-box {
+        margin-top: 15px;
+        padding: 1.5rem;
+        background: var(--dark-bg);
+        border: 1px solid #333;
+        border-top: 2px solid var(--gold);
+        display: none;
+    }
+
+    .btn-download-gold {
+        background: transparent;
+        color: var(--gold);
+        border: 1px solid var(--gold);
+        padding: 8px 20px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-download-gold:hover {
+        background: var(--gold);
+        color: #000;
+        box-shadow: 0 0 15px var(--gold);
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="mb-1"><i class="bi bi-trophy-fill me-2 text-warning"></i> Logros y Reconocimientos</h1>
+    <p class="text-muted mb-0" style="font-family: 'Roboto Mono'">Hitos alcanzados durante mi trayectoria profesional y académica.</p>
+</div>
+
+<div class="row">
+    <!-- COLUMNA IZQUIERDA: LISTA DINÁMICA -->
+    <div class="col-lg-4 award-list-container">
+        
+        <!-- BUCLE DJANGO: Lee de la tabla Reconocimientos -->
+        {% for item in datos %}
+        <div class="award-card" onclick="mostrarReconocimiento('{% if item.rutacertificado %}{{ item.rutacertificado.url }}{% endif %}', '{{ item.descripcionreconocimiento }}', '{{ item.entidadpatrocinadora }}', '{{ item.tiporeconocimiento }}', '{{ item.fechareconocimiento|date:"Y" }}')">
+            <div class="award-title">{{ item.descripcionreconocimiento }}</div>
+            <div class="award-inst">{{ item.entidadpatrocinadora }}</div>
+            <div class="mt-2 small text-muted" style="font-family: 'Roboto Mono'">
+                <i class="bi bi-calendar3 me-1"></i> {{ item.fechareconocimiento|date:"Y" }}
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-trophy display-4 opacity-50"></i>
+            <p class="mt-3 small">No hay logros registrados en el panel.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- COLUMNA DERECHA: VISOR -->
+    <div class="col-lg-8">
+        <div class="cert-viewer">
+            <div id="emptyMsg" class="text-center text-muted">
+                <i class="bi bi-award fs-1"></i>
+                <p class="mt-3" style="font-family: 'Roboto Mono'">SELECCIONA UN LOGRO</p>
+            </div>
+            
+            <iframe id="pdfViewer" src="" class="pdf-embed"></iframe>
+            <img id="imgViewer" src="" class="cert-img">
+        </div>
+
+        <div id="detailBox" class="award-detail-box shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <h4 id="titleDisplay" class="fw-bold mb-0 text-white" style="font-family: 'Rajdhani'"></h4>
+                    <small id="instDisplay" class="text-warning" style="font-family: 'Roboto Mono'"></small>
+                </div>
+                <a id="downloadLink" href="#" class="btn-download-gold" download target="_blank">
+                    <i class="bi bi-download me-2"></i> Descargar
+                </a>
+            </div>
+            <hr style="border-color: #333;">
+            <p id="textDisplay" class="text-muted mb-0 small"></p>
+            <p id="dateDisplay" class="mt-2 small text-success" style="font-family: 'Roboto Mono'"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarReconocimiento(url, titulo, institucion, desc, fecha) {
+        const pdfViewer = document.getElementById('pdfViewer');
+        const imgViewer = document.getElementById('imgViewer');
+        const emptyMsg = document.getElementById('emptyMsg');
+        const detailBox = document.getElementById('detailBox');
+        
+        // Elementos de texto
+        document.getElementById('titleDisplay').innerText = titulo;
+        document.getElementById('instDisplay').innerText = institucion;
+        document.getElementById('textDisplay').innerText = desc; // Aquí iría el tipo o descripción
+        document.getElementById('dateDisplay').innerText = "Año: " + fecha;
+        document.getElementById('downloadLink').href = url;
+
+        // Resetear visualización
+        emptyMsg.style.display = 'none';
+        pdfViewer.style.display = 'none';
+        imgViewer.style.display = 'none';
+        detailBox.style.display = 'none';
+
+        if (url && url !== 'None') {
+            // Lógica simple para detectar PDF o Imagen
+            if (url.toLowerCase().endsWith('.pdf')) {
+                pdfViewer.src = url;
+                pdfViewer.style.display = 'block';
+            } else {
+                imgViewer.src = url;
+                imgViewer.style.display = 'block';
+            }
+            detailBox.style.display = 'block';
+        } else {
+            emptyMsg.style.display = 'block';
+            emptyMsg.innerHTML = '<i class="bi bi-exclamation-circle text-secondary fs-1"></i><p class="mt-3">Sin archivo adjunto</p>';
+            // Aún mostramos la info aunque no haya archivo
+            detailBox.style.display = 'block';
+            document.getElementById('downloadLink').style.display = 'none';
+        }
+
+        // Marcar activo
+        document.querySelectorAll('.award-card').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+</script>
+{% endblock %}
