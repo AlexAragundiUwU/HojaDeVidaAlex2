@@ -15,7 +15,7 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Aplicaciones - El orden es CRÍTICO para Cloudinary y WhiteNoise
+# Aplicaciones - El orden es crítico
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'cloudinary_storage',           # Debe ir antes de staticfiles
-    'whitenoise.runserver_nostatic', # Debe ir antes de staticfiles
+    'whitenoise.runserver_nostatic', 
     'django.contrib.staticfiles',
     'cloudinary',
     'Perfil',
@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 # Middlewares
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', #
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,14 +83,13 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Variable auxiliar para decidir el backend sin registrar la variable global DEFAULT_FILE_STORAGE
-# Esto evita el error de "mutually exclusive"
+# Variable auxiliar para decidir el backend sin registrar DEFAULT_FILE_STORAGE
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
     media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
     media_backend = 'django.core.files.storage.FileSystemStorage'
 
-# Configuración UNIFICADA para Django 4.2+
+# Configuración única para Django 4.2+
 STORAGES = {
     "default": {
         "BACKEND": media_backend,
@@ -111,5 +110,5 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Permite cargar PDFs en iframes (Certificados)
+# Permite cargar PDFs en iframes
 X_FRAME_OPTIONS = 'SAMEORIGIN'
