@@ -83,7 +83,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Usamos una variable auxiliar 'media_backend' para evitar el choque con STORAGES
+# Variable auxiliar para decidir el backend sin romper Django
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
     media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
