@@ -15,16 +15,16 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Aplicaciones - El orden de cloudinary_storage es importante
+# Aplicaciones - El orden es CRÍTICO para Cloudinary y WhiteNoise
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic', 
+    'cloudinary_storage',           # Debe ir antes de staticfiles
+    'whitenoise.runserver_nostatic', # Debe ir antes de staticfiles
     'django.contrib.staticfiles',
-    'cloudinary_storage',
     'cloudinary',
     'Perfil',
 ]
@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 # Middlewares
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,12 +83,14 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Variable auxiliar para decidir el backend sin romper Django
+# Variable auxiliar para decidir el backend sin registrar la variable global DEFAULT_FILE_STORAGE
+# Esto evita el error de "mutually exclusive"
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
     media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
     media_backend = 'django.core.files.storage.FileSystemStorage'
 
+# Configuración UNIFICADA para Django 4.2+
 STORAGES = {
     "default": {
         "BACKEND": media_backend,
@@ -100,6 +102,7 @@ STORAGES = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 # Idioma y Hora
 LANGUAGE_CODE = 'es-ec'
 TIME_ZONE = 'America/Guayaquil' 
@@ -108,5 +111,5 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Permite cargar PDFs en iframes
+# Permite cargar PDFs en iframes (Certificados)
 X_FRAME_OPTIONS = 'SAMEORIGIN'
