@@ -15,7 +15,6 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Aplicaciones - El orden es crítico
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -83,19 +82,18 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Variable auxiliar para decidir el backend sin registrar DEFAULT_FILE_STORAGE
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
     media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
     media_backend = 'django.core.files.storage.FileSystemStorage'
 
-# Configuración única para Django 4.2+
+# AJUSTE PARA WHITENOISE: Evita el error MissingFileError durante collectstatic
 STORAGES = {
     "default": {
         "BACKEND": media_backend,
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
     },
 }
 
@@ -112,3 +110,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Permite cargar PDFs en iframes
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Configuración adicional de WhiteNoise para entornos de producción
+WHITENOISE_MANIFEST_STRICT = False
