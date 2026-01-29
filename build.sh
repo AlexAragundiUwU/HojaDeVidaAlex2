@@ -1,25 +1,21 @@
 #!/usr/bin/env bash
-# exit on error
+# Salir si hay un error
 set -o errexit
 
-# Instalar dependencias
+# Instalación de librerías
 pip install -r requirements.txt
 
-# Recolectar archivos estáticos y aplicar migraciones
+# Recolección de estáticos y aplicación de tablas
 python manage.py collectstatic --no-input
 python manage.py migrate
 
-# Configurar el superusuario dinámicamente desde las variables de Render
+# Configuración del superusuario Alex con la clave 1234
 echo "from django.contrib.auth import get_user_model; \
-import os; \
 User = get_user_model(); \
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME'); \
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD'); \
-email = 'alexaragundi3050@gmail.com'; \
-user, created = User.objects.get_or_create(username=username, defaults={'email': email}); \
-user.set_password(password); \
+user, created = User.objects.get_or_create(username='Alex', defaults={'email': 'alexaragundi3050@gmail.com'}); \
+user.set_password('1234'); \
 user.is_superuser = True; \
 user.is_staff = True; \
 user.save(); \
-print(f'Superusuario {username} actualizado/creado con exito')" \
+print('Superusuario Alex configurado con exito con la clave 1234')" \
 | python manage.py shell
