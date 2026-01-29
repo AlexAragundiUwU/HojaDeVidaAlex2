@@ -76,31 +76,31 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# --- CONFIGURACIÓN DE CLOUDINARY ---
+# --- CONFIGURACIÓN DE CLOUDINARY Y STORAGES (CORREGIDO) ---
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Verificamos si las variables existen para activar el almacenamiento en la nube
+# Definimos el backend de medios sin registrar la variable global DEFAULT_FILE_STORAGE
 if CLOUDINARY_STORAGE['CLOUD_NAME'] and CLOUDINARY_STORAGE['API_KEY'] and CLOUDINARY_STORAGE['API_SECRET']:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL = '/media/'
+    media_backend = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    media_backend = 'django.core.files.storage.FileSystemStorage'
 
-# Configuración de Storages para Django 4.2+
+# Configuración ÚNICA de Storages para Django 4.2+
 STORAGES = {
     "default": {
-        "BACKEND": DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in locals() else "django.core.files.storage.FileSystemStorage",
+        "BACKEND": media_backend,
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Idioma y Hora
 LANGUAGE_CODE = 'es-ec'
 TIME_ZONE = 'America/Guayaquil' 
