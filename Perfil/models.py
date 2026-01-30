@@ -1,146 +1,134 @@
 from django.db import models
 
 class DatosPersonales(models.Model):
-    idperfil = models.IntegerField(primary_key=True)
-    fotoperfil = models.ImageField(upload_to='perfil/', null=True, blank=True)
-    email_contacto = models.EmailField(max_length=100, null=True, blank=True)
-    archivocv = models.FileField(upload_to='cv/', null=True, blank=True, verbose_name="Archivo CV (PDF)")
+    idperfil = models.AutoField(primary_key=True)
+    nombres = models.CharField(max_length=100, null=True, blank=True)
+    apellidos = models.CharField(max_length=100, null=True, blank=True)
+    descripcionperfil = models.TextField(null=True, blank=True)
+    fotoperfil = models.ImageField(upload_to='perfil/', blank=True, null=True)
+    archivocv = models.FileField(upload_to='cv/', blank=True, null=True)
+    email_contacto = models.EmailField(max_length=100, blank=True, null=True)
+    telefonofijo = models.CharField(max_length=20, blank=True, null=True)
+    telefonoconvencional = models.CharField(max_length=20, blank=True, null=True)
+    sitioweb = models.CharField(max_length=100, blank=True, null=True)
+    direcciondomiciliaria = models.CharField(max_length=200, blank=True, null=True)
+    direcciontrabajo = models.CharField(max_length=200, blank=True, null=True)
+    numerocedula = models.CharField(max_length=20, blank=True, null=True)
+    nacionalidad = models.CharField(max_length=50, blank=True, null=True)
+    fechanacimiento = models.DateField(blank=True, null=True)
+    lugarnacimiento = models.CharField(max_length=100, blank=True, null=True)
+    sexo = models.CharField(max_length=20, blank=True, null=True)
+    estadocivil = models.CharField(max_length=20, blank=True, null=True)
+    licenciaconducir = models.CharField(max_length=20, blank=True, null=True)
+    perfilactivo = models.IntegerField(blank=True, null=True)
     
-    # Campo de Resumen
-    descripcionperfil = models.TextField(max_length=500, blank=True, null=True, verbose_name="Resumen Profesional")
+    # Visibilidad de secciones
+    mostrar_experiencia = models.BooleanField(default=True)
+    mostrar_cursos = models.BooleanField(default=True)
+    mostrar_logros = models.BooleanField(default=True)
+    mostrar_academicos = models.BooleanField(default=True)
+    mostrar_proyectos = models.BooleanField(default=True)
+    mostrar_garage = models.BooleanField(default=True)
+
+    class Meta:
+        managed = True
+        db_table = 'datos_personales'
     
-    perfilactivo = models.IntegerField(default=1)
-    apellidos = models.CharField(max_length=60)
-    nombres = models.CharField(max_length=60)
-    nacionalidad = models.CharField(max_length=20)
-    lugarnacimiento = models.CharField(max_length=60)
-    fechanacimiento = models.DateField()
-    numerocedula = models.CharField(max_length=10, unique=True)
-    sexo_choices = [('H', 'Hombre'), ('M', 'Mujer')]
-    sexo = models.CharField(max_length=1, choices=sexo_choices)
-    estadocivil = models.CharField(max_length=50)
-    licenciaconducir = models.CharField(max_length=6, blank=True, null=True)
-    telefonoconvencional = models.CharField(max_length=15, blank=True, null=True)
-    telefonofijo = models.CharField(max_length=15, blank=True, null=True)
-    direcciontrabajo = models.CharField(max_length=50, blank=True, null=True)
-    direcciondomiciliaria = models.CharField(max_length=50)
-    sitioweb = models.CharField(max_length=60, blank=True, null=True)
-
-    # --- INTERRUPTORES DE VISIBILIDAD ---
-    mostrar_experiencia = models.BooleanField(default=True, verbose_name="Incluir Experiencia")
-    mostrar_cursos = models.BooleanField(default=True, verbose_name="Incluir Cursos")
-    mostrar_logros = models.BooleanField(default=True, verbose_name="Incluir Logros")
-    mostrar_academicos = models.BooleanField(default=True, verbose_name="Incluir Académico")
-    mostrar_proyectos = models.BooleanField(default=True, verbose_name="Incluir Proyectos")
-    mostrar_garage = models.BooleanField(default=True, verbose_name="Incluir Garaje")
-
-    # --- MÉTODOS DE CONTEO AUTOMÁTICO ---
-    def total_experiencia(self): return self.experiencialaboral_set.count()
-    def total_cursos(self): return self.cursosrealizados_set.count()
-    def total_logros(self): return self.reconocimientos_set.count()
-    def total_academicos(self): return self.productosacademicos_set.count()
-    def total_proyectos(self): return self.productoslaborales_set.count()
-    def total_garage(self): return self.ventagarage_set.count()
-
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
 
-    class Meta:
-        verbose_name_plural = "Datos Personales"
-
 class ExperienciaLaboral(models.Model):
-    idexperiencilaboral = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    cargodesempenado = models.CharField(max_length=100)
-    nombrempresa = models.CharField(max_length=50)
-    lugarempresa = models.CharField(max_length=50)
-    emailempresa = models.EmailField(max_length=100)
-    sitiowebempresa = models.URLField(max_length=100, blank=True, null=True)
-    nombrecontactoempresarial = models.CharField(max_length=100)
-    telefonocontactoempresarial = models.CharField(max_length=60)
-    fechainiciogestion = models.DateField()
-    fechafingestion = models.DateField(blank=True, null=True)
-    descripcionfunciones = models.TextField(max_length=500)
+    idexperiencia = models.AutoField(primary_key=True)
+    nombrempresa = models.CharField(max_length=100, null=True, blank=True)
+    cargodesempenado = models.CharField(max_length=100, null=True, blank=True)
+    descripcionfunciones = models.TextField(null=True, blank=True)
+    fechainiciogestion = models.DateField(null=True, blank=True)
+    fechafingestion = models.DateField(null=True, blank=True)
+    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
-    rutacertificado = models.FileField(upload_to='certificados/experiencia/', blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.cargodesempenado} en {self.nombrempresa}"
 
     class Meta:
-        ordering = ['-fechainiciogestion']
+        managed = True
+        db_table = 'experiencia_laboral'
 
 class Reconocimientos(models.Model):
-    TIPO_CHOICES = [('Académico', 'Académico'), ('Público', 'Público'), ('Privado', 'Privado')]
-    idreconocimiento = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    tiporeconocimiento = models.CharField(max_length=100, choices=TIPO_CHOICES)
-    fechareconocimiento = models.DateField()
-    descripcionreconocimiento = models.CharField(max_length=200)
-    entidadpatrocinadora = models.CharField(max_length=100)
-    nombrecontactoauspicia = models.CharField(max_length=100)
-    telefonocontactoauspicia = models.CharField(max_length=60)
+    idreconocimiento = models.AutoField(primary_key=True)
+    descripcionreconocimiento = models.CharField(max_length=255, null=True, blank=True)
+    tiporeconocimiento = models.CharField(max_length=100, null=True, blank=True)
+    entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
+    fechareconocimiento = models.DateField(null=True, blank=True)
+    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
-    rutacertificado = models.FileField(upload_to='reconocimientos/', null=True, blank=True)
-    archivo_recurso = models.FileField(upload_to='recursos_cursos/', null=True, blank=True)
+    
+    # Campo PDF corregido
+    rutacertificado = models.FileField(upload_to='reconocimientos/', blank=True, null=True, verbose_name="Certificado (PDF)")
+    # Tu idea: Imagen preview
+    imagen_preview = models.ImageField(upload_to='reconocimientos/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
 
-    def __str__(self):
-        return self.descripcionreconocimiento
+    class Meta:
+        managed = True
+        db_table = 'reconocimientos'
 
 class CursosRealizados(models.Model):
-    idcursorealizado = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    nombrecurso = models.CharField(max_length=100)
-    fechainicio = models.DateField()
-    fechafin = models.DateField()
-    totalhoras = models.IntegerField()
-    descripcioncurso = models.CharField(max_length=100)
-    entidadpatrocinadora = models.CharField(max_length=100)
-    nombrecontactoauspicia = models.CharField(max_length=100)
-    telefonocontactoauspicia = models.CharField(max_length=60)
-    emailempresapatrocinadora = models.EmailField(max_length=60)
+    idcursorealizado = models.AutoField(primary_key=True)
+    nombrecurso = models.CharField(max_length=100, db_column='nombrerecurso', null=True, blank=True)
+    entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
+    fechainicio = models.DateField(null=True, blank=True)
+    fechafin = models.DateField(null=True, blank=True)
+    totalhoras = models.IntegerField(null=True, blank=True)
+    descripcioncurso = models.TextField(blank=True, null=True)
+    nombrecontactoauspicia = models.CharField(max_length=100, blank=True, null=True)
+    telefonocontactoauspicia = models.CharField(max_length=20, blank=True, null=True)
+    emailempresapatrocinadora = models.EmailField(blank=True, null=True)
+    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
-    rutacertificado = models.FileField(upload_to='certificados/cursos/', blank=True, null=True)
-    archivo_extra = models.FileField(upload_to='extras_reconocimientos/', null=True, blank=True)
+    
+    # Campo PDF corregido
+    rutacertificado = models.FileField(upload_to='cursos/', blank=True, null=True, verbose_name="Certificado (PDF)")
+    archivo_extra = models.FileField(upload_to='cursos/extra/', blank=True, null=True)
+    # Tu idea: Imagen preview
+    imagen_preview = models.ImageField(upload_to='cursos/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
 
-    def __str__(self):
-        return self.nombrecurso
+    class Meta:
+        managed = True
+        db_table = 'cursos_realizados'
 
 class ProductosAcademicos(models.Model):
-    idproductoacademico = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    nombrerecurso = models.CharField(max_length=100)
-    clasificador = models.CharField(max_length=100)
-    descripcion = models.CharField(max_length=100)
+    idproductoacademico = models.AutoField(primary_key=True)
+    nombrerecurso = models.CharField(max_length=100, null=True, blank=True)
+    clasificador = models.CharField(max_length=50, null=True, blank=True)
+    descripcion = models.TextField(null=True, blank=True)
+    documento = models.FileField(upload_to='academicos/', blank=True, null=True)
+    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
-    def __str__(self):
-        return self.nombrerecurso
+    class Meta:
+        managed = True
+        db_table = 'productos_academicos'
 
 class ProductosLaborales(models.Model):
-    idproductoslaborales = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    nombreproducto = models.CharField(max_length=100)
-    fechaproducto = models.DateField()
-    descripcion = models.CharField(max_length=100)
-    imagen = models.ImageField(upload_to='proyectos/', null=True, blank=True, verbose_name="Imagen del Proyecto")
+    idproductolaboral = models.AutoField(primary_key=True)
+    nombreproducto = models.CharField(max_length=100, null=True, blank=True)
+    descripcion = models.TextField(null=True, blank=True)
+    fechaproducto = models.DateField(null=True, blank=True)
+    imagen = models.ImageField(upload_to='proyectos/', blank=True, null=True)
+    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
-    def __str__(self):
-        return self.nombreproducto
+    class Meta:
+        managed = True
+        db_table = 'productos_laborales'
 
 class VentaGarage(models.Model):
-    ESTADO_CHOICES = [('Bueno', 'Bueno'), ('Regular', 'Regular')]
-    idventagarage = models.IntegerField(primary_key=True)
-    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
-    nombreproducto = models.CharField(max_length=100)
-    estadoproducto = models.CharField(max_length=40, choices=ESTADO_CHOICES)
-    descripcion = models.CharField(max_length=100)
-    valordelbien = models.DecimalField(max_digits=5, decimal_places=2)
+    idventagarage = models.AutoField(primary_key=True)
+    nombreproducto = models.CharField(max_length=100, null=True, blank=True)
+    descripcionproducto = models.TextField(null=True, blank=True)
+    valordelbien = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    estadoproducto = models.CharField(max_length=50, null=True, blank=True)
+    imagen = models.ImageField(upload_to='garage/', blank=True, null=True)
+    idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
-    documento_interes = models.FileField(upload_to='garage/documentos/', null=True, blank=True,
-    verbose_name="Documento Adicional (PDF/Foto)"
-    )
 
-    def __str__(self):
-        return f"{self.nombreproducto} - ${self.valordelbien}"
+    class Meta:
+        managed = True
+        db_table = 'venta_garage'

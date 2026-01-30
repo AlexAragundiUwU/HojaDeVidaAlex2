@@ -5,19 +5,20 @@
 
 {% block content %}
 <style>
-    /* Estilos Home Cyberpunk - Limpieza Total */
+    /* Estilos Globales Cyberpunk */
+    :root {
+        --neon-green: #00ff41;
+        --dark-bg: #0a0a0a;
+        --card-bg: #0d0d0d;
+    }
+
     .hero-section { 
-        background: #0a0a0a; 
+        background: var(--dark-bg); 
         padding: 3rem; 
         border: 1px solid #1a1a1a; 
         margin-bottom: 2rem; 
-        position: relative; 
-        overflow: hidden; 
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%); 
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
     }
-    
-    .hero-section::before, .hero-section::after { display: none !important; content: none !important; border: none !important; }
 
     .profile-img { 
         width: 170px; 
@@ -25,26 +26,36 @@
         object-fit: cover; 
         border: 3px solid var(--neon-green); 
         padding: 5px; 
-        background: rgba(0, 255, 65, 0.1); 
         border-radius: 50%; 
-        filter: grayscale(100%) contrast(120%); 
-        transition: 0.5s; 
         display: block; 
         margin: 0 auto; 
+        filter: grayscale(100%);
+        transition: 0.5s; 
     }
-    .profile-img:hover { filter: grayscale(0%) contrast(100%); box-shadow: 0 0 25px var(--neon-green); transform: scale(1.05); }
 
-    h1 { color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 5px rgba(0, 255, 65, 0.3); }
-    .contact-item { margin-bottom: 12px; font-size: 0.95rem; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px; font-family: 'Roboto Mono', monospace; color: #aaa; }
-    .contact-item i { color: var(--neon-green); font-size: 1.1rem; text-shadow: 0 0 5px var(--neon-green); }
-    .label-dato { color: var(--neon-green); font-weight: 700; margin-right: 5px; font-size: 0.85rem; text-transform: uppercase; }
-    
-    .btn-cyber { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px 30px; font-family: 'Roboto Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; display: inline-block; transition: 0.3s; cursor: pointer; }
-    .btn-cyber:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
-    
-    .summary-card { background: #0d0d0d; border: 1px solid #222; border-radius: 4px; padding: 35px 20px 20px; height: 100%; transition: 0.3s; display: flex; flex-direction: column; position: relative; }
-    .summary-card:hover { transform: translateY(-5px); border-color: var(--neon-green); box-shadow: 0 5px 15px rgba(0, 255, 65, 0.1); }
-    
+    .profile-img:hover { 
+        filter: grayscale(0%);
+        box-shadow: 0 0 25px var(--neon-green); 
+        transform: scale(1.05); 
+    }
+
+    .summary-card { 
+        background: var(--card-bg); 
+        border: 1px solid #222; 
+        border-radius: 4px; 
+        padding: 25px; 
+        height: 100%; 
+        position: relative; 
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .summary-card:hover {
+        border-color: var(--neon-green);
+        transform: translateY(-5px);
+    }
+
     .count-badge { 
         position: absolute; 
         top: 10px; 
@@ -53,366 +64,281 @@
         color: var(--neon-green); 
         border: 1px solid var(--neon-green); 
         padding: 2px 8px; 
-        font-family: 'Roboto Mono', monospace; 
         font-size: 0.65rem; 
         border-radius: 3px; 
     }
     
-    .btn-close-section { 
-        position: absolute; 
-        top: 10px; 
-        right: 10px; 
-        background: #000; 
-        border: 1px solid #333; 
-        color: #555; 
-        width: 20px; 
-        height: 20px; 
-        border-radius: 4px; 
+    /* Botones de Acción */
+    .btn-action-group { 
         display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        text-decoration: none; 
-        font-size: 10px; 
-        z-index: 10; 
-        transition: 0.3s; 
-        opacity: 0.3;
+        gap: 8px; 
+        margin-top: 10px; 
     }
-    .section-wrapper:hover .btn-close-section { opacity: 1; border-color: #ff4d4d; color: #ff4d4d; }
-    .btn-close-section:hover { background: #ff4d4d; color: #fff !important; }
 
-    .card-icon-header { font-size: 2rem; color: #333; margin-bottom: 15px; transition: 0.3s; }
-    .summary-card:hover .card-icon-header { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
-    .card-title-custom { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.3rem; margin-bottom: 15px; color: #fff; text-transform: uppercase; }
-    
-    .summary-list { border-top: 1px solid #222; padding-top: 10px; }
-    .summary-list li { margin-bottom: 8px; color: #ccc; font-size: 0.85rem; font-family: 'Roboto Mono', monospace; border-left: 2px solid #333; padding-left: 10px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-    .summary-card:hover .summary-list li { border-left-color: var(--neon-green); color: #fff; }
-    
-    /* Botones pequeños en las listas - VERDE NEÓN PARA VISIBILIDAD */
-    .btn-action-group { display: flex; gap: 5px; }
     .btn-mini-cyber { 
-        background: rgba(0, 255, 65, 0.1); 
+        background: rgba(0, 255, 65, 0.05); 
         border: 1px solid var(--neon-green); 
         color: var(--neon-green); 
         font-size: 0.7rem; 
-        padding: 2px 8px; 
+        padding: 4px 10px; 
         cursor: pointer; 
-        transition: 0.3s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
+        text-decoration: none; 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 6px; 
+        transition: 0.3s; 
+        font-family: 'Roboto Mono', monospace;
     }
-    .btn-mini-cyber:hover { background: var(--neon-green); color: #000; }
 
-    .btn-link-cyber { color: #666; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #333; padding: 5px 15px; display: inline-block; margin-top: auto; transition: 0.3s; }
-    .summary-card:hover .btn-link-cyber { border-color: var(--neon-green); color: var(--neon-green); }
-    .btn-link-cyber:hover { background: var(--neon-green); color: #000 !important; }
+    .btn-mini-cyber:hover { 
+        background: var(--neon-green); 
+        color: #000; 
+        box-shadow: 0 0 15px var(--neon-green); 
+    }
 
-    .modal-content-cyber { background-color: #0a0a0a; border: 2px solid var(--neon-green); color: #fff; box-shadow: 0 0 40px rgba(0, 255, 65, 0.2); }
-    .modal-header-cyber { border-bottom: 1px solid #333; }
-    .modal-footer-cyber { border-top: 1px solid #333; }
-    .modal-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--neon-green); letter-spacing: 1px; }
-    .form-check-input { background-color: #000; border-color: #555; }
-    .form-check-input:checked { background-color: var(--neon-green); border-color: var(--neon-green); }
+    .section-title {
+        color: #fff;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Modal Visor */
+    .modal-content-cyber {
+        background: #000;
+        border: 2px solid var(--neon-green);
+        color: #fff;
+    }
+
+    .text-white { color: #fff !important; }
+    .text-muted-cyber { color: #888 !important; font-size: 0.8rem; }
+    .item-list { margin-bottom: 15px; }
+    .item-list li { border-left: 2px solid #333; padding-left: 12px; margin-bottom: 12px; list-style: none; }
+    .item-list li:hover { border-left-color: var(--neon-green); }
 </style>
 
 <div class="hero-section">
     <div class="row align-items-center">
-        <!-- FOTO REDONDA -->
-        <div class="col-lg-3 text-center mb-4 mb-lg-0">
+        <div class="col-lg-3 text-center">
             {% if perfil.fotoperfil %}
-                <img src="{{ perfil.fotoperfil.url }}" class="img-fluid profile-img" alt="Foto Perfil">
-            {% else %}
-                <img src="{% static 'img/foto_perfil.jpg' %}" class="img-fluid profile-img" alt="Avatar">
+                <img src="{{ perfil.fotoperfil.url }}" class="profile-img shadow-lg" alt="Foto de Perfil">
             {% endif %}
         </div>
-
-        <!-- INFO -->
         <div class="col-lg-6">
-            <h1 class="mb-3">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="contact-item"><i class="bi bi-envelope-fill"></i><span>{{ perfil.email_contacto }}</span></div>
-                    {% if perfil.telefonoconvencional %}<div class="contact-item"><i class="bi bi-phone-fill"></i><span><span class="label-dato">Cel:</span> {{ perfil.telefonoconvencional }}</span></div>{% endif %}
-                    <div class="contact-item"><i class="bi bi-geo-alt-fill"></i><span>{{ perfil.direcciondomiciliaria }}</span></div>
-                </div>
-                <div class="col-md-6">
-                    <div class="contact-item"><i class="bi bi-card-text"></i><span><span class="label-dato">CI:</span> {{ perfil.numerocedula }}</span></div>
-                    <div class="contact-item"><i class="bi bi-calendar-event"></i><span>{{ perfil.fechanacimiento|date:"d/m/Y" }}</span></div>
-                    <div class="contact-item"><i class="bi bi-heart-fill"></i><span><span class="label-dato">Civil:</span> {{ perfil.estadocivil }}</span></div>
-                </div>
-                {% if perfil.sitioweb %}
-                <div class="col-12"><div class="contact-item border-0"><i class="bi bi-globe"></i><span>{{ perfil.sitioweb }}</span></div></div>
-                {% endif %}
-            </div>
+            <h1 class="text-white mb-2">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+            <p class="text-success mb-0"><i class="bi bi-envelope-fill me-2"></i>{{ perfil.email_contacto }}</p>
+            <p class="text-muted-cyber mt-2">{{ perfil.descripcionperfil|truncatewords:25 }}</p>
         </div>
-
-        <!-- BOTÓN DESCARGA -->
-        <div class="col-lg-3 text-center mt-4 mt-lg-0">
+        <div class="col-lg-3 text-center">
             {% if perfil.archivocv %}
-                <button type="button" class="btn btn-cyber" data-bs-toggle="modal" data-bs-target="#downloadModal">
-                    <i class="bi bi-file-earmark-pdf me-2"></i>Generar PDF
+                <button class="btn btn-outline-success btn-lg px-4" data-bs-toggle="modal" data-bs-target="#downloadModal">
+                    <i class="bi bi-file-earmark-pdf me-2"></i>GENERAR CV
                 </button>
-            {% else %}
-                <button class="btn btn-cyber" style="opacity: 0.5; cursor: not-allowed">CV No Disponible</button>
             {% endif %}
         </div>
     </div>
 </div>
 
-<!-- GRID DE TARJETAS -->
 <div class="row g-4">
-    <!-- 1. Experiencia (SIN BOTONES DE ARCHIVO) -->
+    <!-- 1. EXPERIENCIA -->
     {% if perfil.mostrar_experiencia %}
-    <div class="col-md-6 col-lg-4 section-wrapper">
-        <div class="card summary-card text-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card summary-card">
             <div class="count-badge">{{ total_exp }} REGISTROS</div>
-            <a href="?ocultar=mostrar_experiencia" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            <i class="bi bi-briefcase card-icon-header"></i>
-            <h5 class="card-title-custom">Experiencia</h5>
-            <ul class="summary-list ps-0 mb-0 text-start">
+            <h5 class="section-title"><i class="bi bi-briefcase"></i> Experiencia</h5>
+            <ul class="item-list p-0">
                 {% for exp in resumen_exp %}
-                <li style="display: block;">
-                    <strong>{{ exp.cargodesempenado }}</strong><br> @ {{ exp.nombrempresa }}
+                <li>
+                    <div class="text-white fw-bold">{{ exp.cargodesempenado }}</div>
+                    <div class="text-muted-cyber">@ {{ exp.nombrempresa }}</div>
                 </li>
                 {% endfor %}
             </ul>
-            <div class="mt-auto pt-3"><a href="{% url 'experiencia' %}" class="btn-link-cyber transition-link">VER HISTORIAL</a></div>
+            <a href="{% url 'experiencia' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER HISTORIAL</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 2. Cursos (CON BOTONES VER Y DESCARGAR PDF) -->
+    <!-- 2. CURSOS (CON BOTONES) -->
     {% if perfil.mostrar_cursos %}
-    <div class="col-md-6 col-lg-4 section-wrapper">
-        <div class="card summary-card text-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card summary-card">
             <div class="count-badge">{{ total_cursos }} CURSOS</div>
-            <a href="?ocultar=mostrar_cursos" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            <i class="bi bi-mortarboard card-icon-header"></i>
-            <h5 class="card-title-custom">Cursos</h5>
-            <ul class="summary-list ps-0 mb-0 text-start">
+            <h5 class="section-title"><i class="bi bi-mortarboard"></i> Cursos</h5>
+            <ul class="item-list p-0">
                 {% for curso in resumen_cursos %}
                 <li>
-                    <span class="text-truncate" style="max-width: 55%;">{{ curso.nombrecurso }}</span>
-                    {% if curso.certificado %}
+                    <div class="text-white fw-bold">{{ curso.nombrecurso }}</div>
                     <div class="btn-action-group">
-                        <!-- Botón Visor: Abre modal con la imagen -->
-                        <button class="btn-mini-cyber" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver">
+                        {% if curso.imagen_preview %}
+                        <button class="btn-mini-cyber" onclick="lanzarVisor('{{ curso.imagen_preview.url }}', '{{ curso.nombrecurso }}')">
                             <i class="bi bi-eye"></i> VER
                         </button>
-                        <!-- Botón Descarga: Convierte la IMAGEN a PDF al descargar -->
-                        <button class="btn-mini-cyber" onclick="descargarComoPdf('{{ curso.certificado.url }}')" title="Descargar como PDF">
-                            <i class="bi bi-download"></i>
-                        </button>
+                        {% endif %}
+                        {% if curso.rutacertificado %}
+                        <a href="{{ curso.rutacertificado.url }}" target="_blank" class="btn-mini-cyber" download>
+                            <i class="bi bi-download"></i> PDF
+                        </a>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
-            <div class="mt-auto pt-3"><a href="{% url 'cursos' %}" class="btn-link-cyber transition-link">VER CERTIFICADOS</a></div>
+            <a href="{% url 'cursos' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER CERTIFICADOS</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 3. Logros (CON BOTONES VER Y DESCARGAR PDF) -->
+    <!-- 3. LOGROS (CON BOTONES) -->
     {% if perfil.mostrar_logros %}
-    <div class="col-md-6 col-lg-4 section-wrapper">
-        <div class="card summary-card text-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card summary-card">
             <div class="count-badge">{{ total_logros }} LOGROS</div>
-            <a href="?ocultar=mostrar_logros" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            <i class="bi bi-trophy card-icon-header"></i>
-            <h5 class="card-title-custom">Logros</h5>
-            <ul class="summary-list ps-0 mb-0 text-start">
+            <h5 class="section-title"><i class="bi bi-trophy"></i> Logros</h5>
+            <ul class="item-list p-0">
                 {% for rec in resumen_rec %}
                 <li>
-                    <span class="text-truncate" style="max-width: 55%;">{{ rec.descripcionreconocimiento }}</span>
-                    {% if rec.certificado %}
+                    <div class="text-white fw-bold">{{ rec.descripcionreconocimiento }}</div>
                     <div class="btn-action-group">
-                        <!-- Botón Visor: Abre modal con la imagen -->
-                        <button class="btn-mini-cyber" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver">
+                        {% if rec.imagen_preview %}
+                        <button class="btn-mini-cyber" onclick="lanzarVisor('{{ rec.imagen_preview.url }}', '{{ rec.descripcionreconocimiento }}')">
                             <i class="bi bi-eye"></i> VER
                         </button>
-                        <!-- Botón Descarga: Convierte la IMAGEN a PDF al descargar -->
-                        <button class="btn-mini-cyber" onclick="descargarComoPdf('{{ rec.certificado.url }}')" title="Descargar como PDF">
-                            <i class="bi bi-download"></i>
-                        </button>
+                        {% endif %}
+                        {% if rec.rutacertificado %}
+                        <a href="{{ rec.rutacertificado.url }}" target="_blank" class="btn-mini-cyber" download>
+                            <i class="bi bi-download"></i> PDF
+                        </a>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </li>
-                {% empty %}
-                <li class="text-muted italic">Sin registros para mostrar.</li>
                 {% endfor %}
             </ul>
-            <div class="mt-auto pt-3"><a href="{% url 'reconocimientos' %}" class="btn-link-cyber transition-link">VER GALERÍA</a></div>
+            <a href="{% url 'reconocimientos' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER GALERÍA</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 4. Académicos (SIN BOTONES, SOLO LISTA) -->
+    <!-- 4. ACADÉMICOS -->
     {% if perfil.mostrar_academicos %}
-    <div class="col-md-6 col-lg-4 section-wrapper">
-        <div class="card summary-card text-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card summary-card">
             <div class="count-badge">{{ total_acad }} RECURSOS</div>
-            <a href="?ocultar=mostrar_academicos" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            <i class="bi bi-journal-code card-icon-header"></i>
-            <h5 class="card-title-custom">Académicos</h5>
-            <ul class="summary-list ps-0 mb-0 text-start">
+            <h5 class="section-title"><i class="bi bi-book"></i> Académicos</h5>
+            <ul class="item-list p-0">
                 {% for acad in resumen_acad %}
                 <li>
-                    <span class="text-truncate" style="max-width: 100%;">{{ acad.nombrerecurso }}</span>
+                    <div class="text-white fw-bold">{{ acad.nombrerecurso }}</div>
+                    <div class="text-muted-cyber">{{ acad.clasificador }}</div>
                 </li>
                 {% endfor %}
             </ul>
-            <div class="mt-auto pt-3"><a href="{% url 'productos_academicos' %}" class="btn-link-cyber transition-link">VER BIBLIOTECA</a></div>
+            <a href="{% url 'productos_academicos' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER BIBLIOTECA</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 5. Proyectos -->
+    <!-- 5. PROYECTOS -->
     {% if perfil.mostrar_proyectos %}
-    <div class="col-md-6 col-lg-4 section-wrapper">
-        <div class="card summary-card text-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card summary-card">
             <div class="count-badge">{{ total_proyectos }} PROYECTOS</div>
-            <a href="?ocultar=mostrar_proyectos" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            <i class="bi bi-cpu card-icon-header"></i>
-            <h5 class="card-title-custom">Proyectos</h5>
-            <ul class="summary-list ps-0 mb-0 text-start">
+            <h5 class="section-title"><i class="bi bi-cpu"></i> Proyectos</h5>
+            <ul class="item-list p-0">
                 {% for lab in resumen_lab %}
-                <li>{{ lab.nombreproducto }}</li>
+                <li>
+                    <div class="text-white fw-bold">{{ lab.nombreproducto }}</div>
+                </li>
                 {% endfor %}
             </ul>
-            <div class="mt-auto pt-3"><a href="{% url 'productos_laborales' %}" class="btn-link-cyber transition-link">VER PORTAFOLIO</a></div>
+            <a href="{% url 'productos_laborales' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER PORTAFOLIO</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 6. Garaje -->
+    <!-- 6. GARAJE -->
     {% if perfil.mostrar_garage %}
-    <div class="col-md-6 col-lg-4 section-wrapper">
-        <div class="card summary-card text-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card summary-card">
             <div class="count-badge">{{ total_garage }} ITEMS</div>
-            <a href="?ocultar=mostrar_garage" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            <i class="bi bi-shop card-icon-header"></i>
-            <h5 class="card-title-custom">Garaje</h5>
-            <div class="d-flex flex-wrap gap-1 justify-content-center mt-2 mb-0">
+            <h5 class="section-title"><i class="bi bi-shop"></i> Garaje</h5>
+            <div class="d-flex flex-wrap gap-2 mb-3">
                 {% for item in resumen_garage %}
-                <span class="badge bg-transparent text-success border border-success" style="font-family: 'Roboto Mono'; font-size: 0.7rem;">{{ item.nombreproducto }}</span>
+                <span class="badge border border-success text-success p-2">{{ item.nombreproducto }}</span>
                 {% endfor %}
             </div>
-            <div class="mt-auto pt-3"><a href="{% url 'garage' %}" class="btn-link-cyber transition-link">IR A TIENDA</a></div>
+            <a href="{% url 'garage' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">IR A TIENDA</a>
         </div>
     </div>
     {% endif %}
 </div>
 
-<!-- ================= MODALES ================= -->
-
-<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR DE IMAGEN) -->
-<div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
+<!-- MODAL VISOR DE IMÁGENES -->
+<div class="modal fade" id="modalVisorCyber" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
-            <div class="modal-header modal-header-cyber">
-                <h5 class="modal-title" id="tituloVisor">Archivo</h5>
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white" id="visorTitulo">Certificado</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-0 text-center" id="visorContainer" style="min-height: 50vh; background: #000; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <!-- El contenido se inserta vía JS -->
+            <div class="modal-body text-center p-0 bg-black">
+                <img id="visorImg" src="" class="img-fluid" style="max-height: 85vh; padding: 15px;">
             </div>
         </div>
     </div>
 </div>
 
-<!-- 2. MODAL GENERAR CV -->
-<div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content modal-content-cyber">
-      <div class="modal-header modal-header-cyber">
-        <h5 class="modal-title"><i class="bi bi-printer me-2"></i>CONFIGURAR PORTAFOLIO</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p class="small text-muted mb-3" style="font-family: 'Roboto Mono'">Selecciona los módulos a incluir:</p>
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="checkCV" checked disabled>
-            <label class="form-check-label" for="checkCV">Hoja de Vida (PDF Principal)</label>
+<!-- MODAL CONFIGURACIÓN CV -->
+<div class="modal fade" id="downloadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+            <div class="modal-header border-success">
+                <h5 class="modal-title text-success">CONFIGURAR EXPORTACIÓN PDF</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'vista_previa_cv' %}" method="get" target="_blank">
+                    <input type="hidden" name="cv" value="true">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="experiencia" checked>
+                        <label class="form-check-label text-white">Incluir Experiencia</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="cursos" checked>
+                        <label class="form-check-label text-white">Incluir Cursos</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="logros" checked>
+                        <label class="form-check-label text-white">Incluir Logros</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="academicos" checked>
+                        <label class="form-check-label text-white">Incluir Académicos</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="proyectos" checked>
+                        <label class="form-check-label text-white">Incluir Proyectos</label>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold">DESCARGAR DOCUMENTO</button>
+                </form>
+            </div>
         </div>
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="checkExp"><label class="form-check-label" for="checkExp">Experiencia</label></div>
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="checkCur"><label class="form-check-label" for="checkCur">Cursos</label></div>
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="checkLog"><label class="form-check-label" for="checkLog">Logros</label></div>
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="checkAcad"><label class="form-check-label" for="checkAcad">Académicos</label></div>
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="checkProy"><label class="form-check-label" for="checkProy">Proyectos</label></div>
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="checkGar"><label class="form-check-label" for="checkGar">Venta de Garaje</label></div>
-      </div>
-      <div class="modal-footer modal-footer-cyber">
-        <button type="button" class="btn btn-cyber btn-sm" onclick="generarVistaPrevia()">VER VISTA PREVIA</button>
-      </div>
     </div>
-  </div>
 </div>
 
 <script>
-    function verArchivo(url, titulo) {
-        // 1. Forzar HTTPS
-        if (url.startsWith('http://')) {
-            url = url.replace('http://', 'https://');
-        }
-
-        document.getElementById('tituloVisor').innerText = titulo;
-        var visorContainer = document.getElementById('visorContainer');
-        visorContainer.innerHTML = ''; // Limpiar contenido previo
-
-        // ESTRATEGIA: SIEMPRE ES IMAGEN (PNG/JPG)
-        var img = document.createElement('img');
-        img.src = url;
-        img.className = "img-fluid";
-        img.style.maxHeight = "80vh";
-        img.style.border = "1px solid #333";
-        img.alt = "Vista previa del certificado";
-        
-        visorContainer.appendChild(img);
-
-        // BOTÓN DENTRO DEL MODAL: Descarga como PDF
-        // TRUCO CLOUDINARY: Reemplazamos extension por .pdf y forzamos descarga
-        var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf?fl_attachment";
-        
-        var divBtn = document.createElement('div');
-        divBtn.className = "p-3 w-100 mt-2";
-        divBtn.innerHTML = `<a href="${pdfUrl}" target="_blank" class="btn btn-cyber w-50">
-                                <i class="bi bi-file-pdf me-2"></i>Descargar como PDF
-                            </a>`;
-        visorContainer.appendChild(divBtn);
-
-        // Mostrar Modal
-        var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
-        myModal.show();
-    }
-
-    // NUEVA FUNCIÓN: Descarga directa convirtiendo a PDF (Botón pequeño)
-    function descargarComoPdf(url) {
-        if (url.startsWith('http://')) {
-            url = url.replace('http://', 'https://');
-        }
-        // TRUCO: Convertir IMG a PDF al vuelo
-        var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf?fl_attachment";
-        window.open(pdfUrl, '_blank');
-    }
-
-    // Función para generar el CV
-    function generarVistaPrevia() {
-        let url = `{% url 'vista_previa_cv' %}?cv=true`;
-        if (document.getElementById('checkExp').checked) url += "&experiencia=true";
-        if (document.getElementById('checkCur').checked) url += "&cursos=true";
-        if (document.getElementById('checkLog').checked) url += "&logros=true";
-        if (document.getElementById('checkAcad').checked) url += "&academicos=true";
-        if (document.getElementById('checkProy').checked) url += "&proyectos=true";
-        if (document.getElementById('checkGar').checked) url += "&garage=true";
-        
-        window.open(url, '_blank');
-        
-        var myModalEl = document.getElementById('downloadModal');
-        var modal = bootstrap.Modal.getInstance(myModalEl);
-        modal.hide();
+    function lanzarVisor(url, titulo) {
+        document.getElementById('visorTitulo').innerText = titulo;
+        document.getElementById('visorImg').src = url;
+        var modal = new bootstrap.Modal(document.getElementById('modalVisorCyber'));
+        modal.show();
     }
 </script>
 {% endblock %}
