@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* Reglas obligatorias para xhtml2pdf */
+        /* Configuraciones para xhtml2pdf */
         @page {
             size: A4;
             margin: 1.5cm;
@@ -56,13 +56,13 @@
         .item-title { font-weight: bold; font-size: 11pt; color: #000; }
         .item-meta { color: #666; font-size: 9pt; font-style: italic; margin-bottom: 4px; }
         
-        /* Contenedores de Certificados */
+        /* Contenedores de Certificados e Imágenes */
         .cert-container { 
             margin-top: 8px; 
             text-align: center; 
         }
         .cert-img { 
-            width: 320px; 
+            width: 300px; 
             border: 1px solid #ddd; 
             padding: 5px; 
         }
@@ -80,8 +80,8 @@
             vertical-align: top; 
         }
         .garage-img { 
-            width: 120px; 
-            height: 90px; 
+            width: 110px; 
+            height: 80px; 
         }
         .price { 
             color: #28a745; 
@@ -93,6 +93,11 @@
             text-align: center; 
             font-size: 8pt; 
             color: #aaa; 
+        }
+
+        /* Salto de página forzado */
+        .pdf-page-break {
+            page-break-before: always;
         }
     </style>
 </head>
@@ -117,7 +122,7 @@
         </tr>
     </table>
 
-    <!-- EXPERIENCIA -->
+    <!-- EXPERIENCIA LABORAL -->
     {% if experiencias %}
     <h2>Experiencia Profesional</h2>
     {% for exp in experiencias %}
@@ -129,7 +134,7 @@
     {% endfor %}
     {% endif %}
 
-    <!-- CURSOS CON CERTIFICADOS -->
+    <!-- CURSOS Y CERTIFICADOS -->
     {% if cursos %}
     <h2>Formación y Certificados</h2>
     {% for curso in cursos %}
@@ -145,7 +150,7 @@
     {% endfor %}
     {% endif %}
 
-    <!-- RECONOCIMIENTOS -->
+    <!-- LOGROS Y RECONOCIMIENTOS -->
     {% if logros %}
     <h2>Reconocimientos Destacados</h2>
     {% for rec in logros %}
@@ -173,9 +178,21 @@
     {% endfor %}
     {% endif %}
 
-    <!-- VENTA DE GARAJE -->
+    <!-- PROYECTOS LABORALES -->
+    {% if proyectos %}
+    <h2>Proyectos Laborales</h2>
+    {% for proyecto in proyectos %}
+    <div class="section">
+        <div class="item-title">{{ proyecto.nombreproducto }}</div>
+        <div class="item-meta">Fecha de entrega/término: {{ proyecto.fechaproducto|date:"d/m/Y" }}</div>
+        <div style="font-size: 9pt;">{{ proyecto.descripcion }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- VENTA DE GARAJE (INICIO EN NUEVA PÁGINA) -->
     {% if garage %}
-    <div style="page-break-before: always;"></div>
+    <div class="pdf-page-break"></div>
     <h2>Catálogo de Artículos (Venta de Garaje)</h2>
     <table class="garage-table">
         {% for item in garage %}
@@ -184,7 +201,7 @@
                 {% if item.imagen %}
                     <img src="{{ item.imagen.url }}" class="garage-img"><br>
                 {% endif %}
-                <div style="font-weight: bold; margin-top: 5px;">{{ item.nombreproducto }}</div>
+                <div style="font-weight: bold; margin-top: 5px; font-size: 9pt;">{{ item.nombreproducto }}</div>
                 <div class="price">${{ item.valordelbien }}</div>
                 <div style="font-size: 8pt; color: #777;">Estado: {{ item.estadoproducto }}</div>
             </td>

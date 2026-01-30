@@ -38,7 +38,6 @@ def home(request):
     """Vista principal que gestiona el resumen de las 6 secciones y el ocultado de tarjetas."""
     perfil = get_active_profile()
     
-    # Lógica para ocultar secciones permanentemente desde la "X" de las tarjetas
     if perfil:
         campo_a_ocultar = request.GET.get('ocultar')
         if campo_a_ocultar and hasattr(perfil, campo_a_ocultar):
@@ -46,11 +45,9 @@ def home(request):
             perfil.save()
             return redirect('home')
 
-    # Inicialización de contadores
     c_exp = c_cur = c_log = c_aca = c_pro = c_gar = 0
     
     if perfil:
-        # Conteo de registros activos para mostrar en las burbujas de las tarjetas
         c_exp = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).count()
         c_cur = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).count()
         c_log = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).count()
@@ -60,148 +57,82 @@ def home(request):
 
     context = {
         'perfil': perfil,
-        # Resúmenes limitados a 3 registros y ordenados cronológicamente
-        'resumen_exp': ExperienciaLaboral.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechainiciogestion')[:3] if perfil else [],
-
-        'resumen_cursos': CursosRealizados.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechafin')[:3] if perfil else [],
-
-        'resumen_rec': Reconocimientos.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechareconocimiento')[:3] if perfil else [],
-
-        'resumen_acad': ProductosAcademicos.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-pk')[:3] if perfil else [],
-
-        'resumen_lab': ProductosLaborales.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechaproducto')[:3] if perfil else [],
-        
-        'resumen_garage': VentaGarage.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        )[:5] if perfil else [],
-        
-        # Totales para el modal y las burbujas
+        'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion')[:3] if perfil else [],
+        'resumen_cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')[:3] if perfil else [],
+        'resumen_rec': Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')[:3] if perfil else [],
+        'resumen_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-pk')[:3] if perfil else [],
+        'resumen_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')[:3] if perfil else [],
+        'resumen_garage': VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:5] if perfil else [],
         'total_exp': c_exp, 'total_cursos': c_cur, 'total_logros': c_log,
         'total_acad': c_aca, 'total_proyectos': c_pro, 'total_garage': c_gar,
     }
     return render(request, 'home.html', context)
 
 def vista_previa_cv(request):
-    """Genera el PDF dinámico basándose en los filtros seleccionados en el modal del Home."""
+    """Genera el PDF dinámico basándose en los filtros seleccionados."""
     perfil = get_active_profile()
     if not perfil:
         return redirect('home')
 
     context = {'perfil': perfil}
 
-    # Lógica de filtros: recibe los parámetros del modal de home.html
     if request.GET.get('experiencia') == 'true': 
-        context['experiencias'] = ExperienciaLaboral.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechainiciogestion')
+        context['experiencias'] = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion')
         
     if request.GET.get('cursos') == 'true': 
-        context['cursos'] = CursosRealizados.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechafin')
+        context['cursos'] = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')
         
     if request.GET.get('logros') == 'true': 
-        context['logros'] = Reconocimientos.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechareconocimiento')
+        context['logros'] = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')
         
     if request.GET.get('proyectos') == 'true': 
-        context['proyectos'] = ProductosLaborales.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-fechaproducto')
+        context['proyectos'] = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')
         
     if request.GET.get('garage') == 'true': 
-        context['garage'] = VentaGarage.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        )
+        context['garage'] = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     
     if request.GET.get('academicos') == 'true': 
-        context['academicos'] = ProductosAcademicos.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        ).order_by('-pk')
+        context['academicos'] = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-pk')
 
-    # Carga de la plantilla diseñada para el PDF
     template = get_template('cv_print.html')
     html = template.render(context)
     
     response = HttpResponse(content_type='application/pdf')
-    # Disposición 'inline' permite visualizar el PDF antes de guardarlo
     response['Content-Disposition'] = f'inline; filename="CV_{perfil.nombres}_{perfil.apellidos}.pdf"'
 
-    # Generación final del PDF con soporte para imágenes locales
     pisa_status = pisa.CreatePDF(html, dest=response, link_callback=link_callback)
     
     if pisa_status.err:
-        return HttpResponse('Ocurrió un error al procesar el archivo PDF.')
+        return HttpResponse('Error al procesar el PDF.')
     return response
 
-# Vistas de detalle para cada sección individual con ordenamiento
+# Vistas de detalle
 def experiencia(request):
     perfil = get_active_profile()
-    datos = ExperienciaLaboral.objects.filter(
-        idperfilconqueestaactivo=perfil, 
-        activarparaqueseveaenfront=True
-    ).order_by('-fechainiciogestion') if perfil else []
+    datos = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion') if perfil else []
     return render(request, 'experiencia.html', {'datos': datos, 'perfil': perfil})
 
 def productos_academicos(request):
     perfil = get_active_profile()
-    datos = ProductosAcademicos.objects.filter(
-        idperfilconqueestaactivo=perfil, 
-        activarparaqueseveaenfront=True
-    ).order_by('-pk') if perfil else []
+    datos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-pk') if perfil else []
     return render(request, 'productos_academicos.html', {'datos': datos, 'perfil': perfil})
 
 def productos_laborales(request):
     perfil = get_active_profile()
-    datos = ProductosLaborales.objects.filter(
-        idperfilconqueestaactivo=perfil, 
-        activarparaqueseveaenfront=True
-    ).order_by('-fechaproducto') if perfil else []
+    datos = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto') if perfil else []
     return render(request, 'productos_laborales.html', {'datos': datos, 'perfil': perfil})
 
 def cursos(request):
     perfil = get_active_profile()
-    datos = CursosRealizados.objects.filter(
-        idperfilconqueestaactivo=perfil, 
-        activarparaqueseveaenfront=True
-    ).order_by('-fechafin') if perfil else []
+    datos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin') if perfil else []
     return render(request, 'cursos.html', {'datos': datos, 'perfil': perfil})
 
 def reconocimientos(request):
     perfil = get_active_profile()
-    datos = Reconocimientos.objects.filter(
-        idperfilconqueestaactivo=perfil, 
-        activarparaqueseveaenfront=True
-    ).order_by('-fechareconocimiento') if perfil else []
+    datos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento') if perfil else []
     return render(request, 'reconocimientos.html', {'datos': datos, 'perfil': perfil})
 
 def garage(request):
     perfil = get_active_profile()
-    datos = VentaGarage.objects.filter(
-        idperfilconqueestaactivo=perfil, 
-        activarparaqueseveaenfront=True
-    ) if perfil else []
+    datos = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True) if perfil else []
     return render(request, 'garage.html', {'datos': datos, 'perfil': perfil})
