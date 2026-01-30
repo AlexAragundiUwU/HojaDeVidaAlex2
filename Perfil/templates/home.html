@@ -17,7 +17,6 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
     }
     
-    /* Eliminación absoluta de la línea verde decorativa */
     .hero-section::before, .hero-section::after { display: none !important; content: none !important; border: none !important; }
 
     .profile-img { 
@@ -46,7 +45,6 @@
     .summary-card { background: #0d0d0d; border: 1px solid #222; border-radius: 4px; padding: 35px 20px 20px; height: 100%; transition: 0.3s; display: flex; flex-direction: column; position: relative; }
     .summary-card:hover { transform: translateY(-5px); border-color: var(--neon-green); box-shadow: 0 5px 15px rgba(0, 255, 65, 0.1); }
     
-    /* RECUADRO DE REGISTROS A LA IZQUIERDA */
     .count-badge { 
         position: absolute; 
         top: 10px; 
@@ -60,7 +58,6 @@
         border-radius: 3px; 
     }
     
-    /* BOTÓN X PEQUEÑO A LA DERECHA */
     .btn-close-section { 
         position: absolute; 
         top: 10px; 
@@ -91,7 +88,6 @@
     .summary-list li { margin-bottom: 8px; color: #ccc; font-size: 0.85rem; font-family: 'Roboto Mono', monospace; border-left: 2px solid #333; padding-left: 10px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
     .summary-card:hover .summary-list li { border-left-color: var(--neon-green); color: #fff; }
     
-    /* Botones pequeños en las listas */
     .btn-icon-list { background: transparent; border: none; color: #555; font-size: 1rem; cursor: pointer; transition: 0.3s; padding: 0 5px; }
     .btn-icon-list:hover { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
 
@@ -99,7 +95,6 @@
     .summary-card:hover .btn-link-cyber { border-color: var(--neon-green); color: var(--neon-green); }
     .btn-link-cyber:hover { background: var(--neon-green); color: #000 !important; }
 
-    /* Estilo del Modal */
     .modal-content-cyber { background-color: #0a0a0a; border: 2px solid var(--neon-green); color: #fff; box-shadow: 0 0 40px rgba(0, 255, 65, 0.2); }
     .modal-header-cyber { border-bottom: 1px solid #333; }
     .modal-footer-cyber { border-top: 1px solid #333; }
@@ -152,7 +147,7 @@
     </div>
 </div>
 
-<!-- GRID DE TARJETAS (6 APARTADOS) -->
+<!-- GRID DE TARJETAS -->
 <div class="row g-4">
     <!-- 1. Experiencia -->
     {% if perfil.mostrar_experiencia %}
@@ -160,7 +155,6 @@
         <div class="card summary-card text-center">
             <div class="count-badge">{{ total_exp }} REGISTROS</div>
             <a href="?ocultar=mostrar_experiencia" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            
             <i class="bi bi-briefcase card-icon-header"></i>
             <h5 class="card-title-custom">Experiencia</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
@@ -175,13 +169,12 @@
     </div>
     {% endif %}
 
-    <!-- 2. Cursos -->
+    <!-- 2. Cursos (Con Activación Directa) -->
     {% if perfil.mostrar_cursos %}
     <div class="col-md-6 col-lg-4 section-wrapper">
         <div class="card summary-card text-center">
             <div class="count-badge">{{ total_cursos }} CURSOS</div>
             <a href="?ocultar=mostrar_cursos" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            
             <i class="bi bi-mortarboard card-icon-header"></i>
             <h5 class="card-title-custom">Cursos</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
@@ -190,8 +183,13 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ curso.nombrecurso }}</span>
                     {% if curso.certificado %}
                     <div>
-                        <button onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" class="btn-icon-list" title="Ver Certificado"><i class="bi bi-eye"></i></button>
-                        <a href="{{ curso.certificado.url }}" download class="btn-icon-list" title="Descargar"><i class="bi bi-download"></i></a>
+                        <!-- USO DE data-bs-toggle PARA ABRIR MODAL SIN JS COMPLEJO -->
+                        <button class="btn-icon-list" data-bs-toggle="modal" data-bs-target="#modalVisor" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver Certificado">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <a href="{{ curso.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar">
+                            <i class="bi bi-download"></i>
+                        </a>
                     </div>
                     {% endif %}
                 </li>
@@ -202,13 +200,12 @@
     </div>
     {% endif %}
 
-    <!-- 3. Logros -->
+    <!-- 3. Logros (Con Activación Directa) -->
     {% if perfil.mostrar_logros %}
     <div class="col-md-6 col-lg-4 section-wrapper">
         <div class="card summary-card text-center">
             <div class="count-badge">{{ total_logros }} LOGROS</div>
             <a href="?ocultar=mostrar_logros" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            
             <i class="bi bi-trophy card-icon-header"></i>
             <h5 class="card-title-custom">Logros</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
@@ -217,8 +214,12 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ rec.descripcionreconocimiento }}</span>
                     {% if rec.certificado %}
                     <div>
-                        <button onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" class="btn-icon-list" title="Ver Reconocimiento"><i class="bi bi-eye"></i></button>
-                        <a href="{{ rec.certificado.url }}" download class="btn-icon-list" title="Descargar"><i class="bi bi-download"></i></a>
+                        <button class="btn-icon-list" data-bs-toggle="modal" data-bs-target="#modalVisor" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver Reconocimiento">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <a href="{{ rec.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar">
+                            <i class="bi bi-download"></i>
+                        </a>
                     </div>
                     {% endif %}
                 </li>
@@ -237,7 +238,6 @@
         <div class="card summary-card text-center">
             <div class="count-badge">{{ total_acad }} RECURSOS</div>
             <a href="?ocultar=mostrar_academicos" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            
             <i class="bi bi-journal-code card-icon-header"></i>
             <h5 class="card-title-custom">Académicos</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
@@ -245,7 +245,9 @@
                 <li>
                     <span class="text-truncate" style="max-width: 75%;">{{ acad.nombrerecurso }}</span>
                     {% if acad.documento %}
-                        <button onclick="verArchivo('{{ acad.documento.url }}', '{{ acad.nombrerecurso }}')" class="btn-icon-list" title="Ver Documento"><i class="bi bi-eye"></i></button>
+                        <button class="btn-icon-list" data-bs-toggle="modal" data-bs-target="#modalVisor" onclick="verArchivo('{{ acad.documento.url }}', '{{ acad.nombrerecurso }}')" title="Ver Documento">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     {% endif %}
                 </li>
                 {% endfor %}
@@ -261,7 +263,6 @@
         <div class="card summary-card text-center">
             <div class="count-badge">{{ total_proyectos }} PROYECTOS</div>
             <a href="?ocultar=mostrar_proyectos" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            
             <i class="bi bi-cpu card-icon-header"></i>
             <h5 class="card-title-custom">Proyectos</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
@@ -280,7 +281,6 @@
         <div class="card summary-card text-center">
             <div class="count-badge">{{ total_garage }} ITEMS</div>
             <a href="?ocultar=mostrar_garage" class="btn-close-section" title="Ocultar sección"><i class="bi bi-x-lg"></i></a>
-            
             <i class="bi bi-shop card-icon-header"></i>
             <h5 class="card-title-custom">Garaje</h5>
             <div class="d-flex flex-wrap gap-1 justify-content-center mt-2 mb-0">
@@ -343,16 +343,24 @@
 <script>
     // Función para ver el archivo en el modal visor
     function verArchivo(url, titulo) {
+        // SEGURIDAD: Forzar HTTPS para evitar bloqueo de contenido mixto
+        if (url.startsWith('http://')) {
+            url = url.replace('http://', 'https://');
+        }
+
         document.getElementById('tituloVisor').innerText = titulo;
         var visor = document.getElementById('visorArchivo');
         visor.src = url;
-        var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
-        myModal.show();
         
-        // Limpiar al cerrar
-        var modalEl = document.getElementById('modalVisor');
-        modalEl.addEventListener('hidden.bs.modal', function (event) {
-            visor.src = "";
+        // Ya no intentamos abrir el modal con JS si Bootstrap falla,
+        // porque los botones ahora tienen data-bs-toggle="modal"
+    }
+
+    // Limpiar iframe al cerrar para detener descargas o videos
+    var modalVisorEl = document.getElementById('modalVisor');
+    if (modalVisorEl) {
+        modalVisorEl.addEventListener('hidden.bs.modal', function (event) {
+            document.getElementById('visorArchivo').src = "";
         });
     }
 
@@ -376,11 +384,8 @@
 {% endblock %}
 ```
 
-### 2. Comandos para Guardar y Subir
-
-No tienes que hacerlos uno por uno, puedes hacerlo todo en un solo bloque. Guarda el archivo en tu editor y luego ejecuta esto en tu terminal:
-
+### Comandos para subir (Ejecútalos de nuevo):
 ```bash
 git add .
-git commit -m "Fix: Botones de ver y descargar en Home"
+git commit -m "Fix final: Visor con activacion HTML y HTTPS forzado"
 git push origin main
