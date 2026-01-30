@@ -20,7 +20,6 @@ class ExperienciaLaboralForm(forms.ModelForm):
         inicio = cleaned_data.get('fechainiciogestion')
         fin = cleaned_data.get('fechafingestion')
         
-        # Usamos localdate() para respetar la zona horaria de Ecuador
         hoy = timezone.localdate()
 
         if inicio and inicio > hoy:
@@ -72,6 +71,7 @@ class ReconocimientosForm(forms.ModelForm):
 class DatosPersonalesAdmin(admin.ModelAdmin):
     list_display = ('nombres', 'apellidos', 'numerocedula', 'email_contacto', 'perfilactivo')
     list_editable = ('perfilactivo',)
+    ordering = ('pk',) # Ordenar por PK para evitar error de ID
     
     fieldsets = (
         ('Información Principal', {
@@ -95,6 +95,7 @@ class ExperienciaLaboralAdmin(admin.ModelAdmin):
     list_display = ('cargodesempenado', 'nombrempresa', 'fechainiciogestion', 'activarparaqueseveaenfront')
     list_filter = ('activarparaqueseveaenfront', 'nombrempresa')
     list_editable = ('activarparaqueseveaenfront',)
+    ordering = ('pk',)
 
 @admin.register(Reconocimientos)
 class ReconocimientosAdmin(admin.ModelAdmin):
@@ -102,15 +103,19 @@ class ReconocimientosAdmin(admin.ModelAdmin):
     list_display = ('descripcionreconocimiento', 'tiporeconocimiento', 'entidadpatrocinadora', 'vista_previa_certificado', 'activarparaqueseveaenfront')
     list_filter = ('tiporeconocimiento',)
     list_editable = ('activarparaqueseveaenfront',)
-    readonly_fields = ('vista_previa_certificado',) # Para verla dentro del formulario
+    readonly_fields = ('vista_previa_certificado',)
+    ordering = ('pk',) # CRUCIAL: Evita el error "Cannot resolve keyword 'id'"
 
     def vista_previa_certificado(self, obj):
-        if obj and obj.certificado:
-            url = obj.certificado.url
-            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-                 return format_html('<a href="{}" target="_blank"><img src="{}" width="100" style="border-radius: 5px; border: 1px solid #ccc;" /></a>', url, url)
-            else:
-                 return format_html('<a href="{}" target="_blank" class="button">Ver Archivo</a>', url)
+        try:
+            if obj and obj.certificado:
+                url = obj.certificado.url
+                if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                     return format_html('<a href="{}" target="_blank"><img src="{}" width="100" style="border-radius: 5px; border: 1px solid #ccc;" /></a>', url, url)
+                else:
+                     return format_html('<a href="{}" target="_blank" class="button">Ver Archivo</a>', url)
+        except Exception:
+            return "Error al cargar vista previa"
         return "Guarda para ver la vista previa"
     
     vista_previa_certificado.short_description = "Vista Previa"
@@ -120,15 +125,19 @@ class CursosRealizadosAdmin(admin.ModelAdmin):
     form = CursosRealizadosForm
     list_display = ('nombrecurso', 'entidadpatrocinadora', 'totalhoras', 'vista_previa_certificado', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
-    readonly_fields = ('vista_previa_certificado',) # Para verla dentro del formulario
+    readonly_fields = ('vista_previa_certificado',)
+    ordering = ('pk',) # CRUCIAL: Evita el error "Cannot resolve keyword 'id'"
 
     def vista_previa_certificado(self, obj):
-        if obj and obj.certificado:
-            url = obj.certificado.url
-            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-                 return format_html('<a href="{}" target="_blank"><img src="{}" width="100" style="border-radius: 5px; border: 1px solid #ccc;" /></a>', url, url)
-            else:
-                 return format_html('<a href="{}" target="_blank" class="button">Ver Archivo</a>', url)
+        try:
+            if obj and obj.certificado:
+                url = obj.certificado.url
+                if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                     return format_html('<a href="{}" target="_blank"><img src="{}" width="100" style="border-radius: 5px; border: 1px solid #ccc;" /></a>', url, url)
+                else:
+                     return format_html('<a href="{}" target="_blank" class="button">Ver Archivo</a>', url)
+        except Exception:
+             return "Error al cargar vista previa"
         return "Guarda para ver la vista previa"
 
     vista_previa_certificado.short_description = "Vista Previa"
@@ -137,16 +146,21 @@ class CursosRealizadosAdmin(admin.ModelAdmin):
 class ProductosAcademicosAdmin(admin.ModelAdmin):
     list_display = ('nombrerecurso', 'clasificador', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
+    ordering = ('pk',)
 
 @admin.register(ProductosLaborales)
 class ProductosLaboralesAdmin(admin.ModelAdmin):
     list_display = ('nombreproducto', 'fechaproducto', 'vista_previa_imagen', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     readonly_fields = ('vista_previa_imagen',)
+    ordering = ('pk',)
 
     def vista_previa_imagen(self, obj):
-        if obj and obj.imagen:
-            return format_html('<img src="{}" width="100" style="border-radius: 5px;" />', obj.imagen.url)
+        try:
+            if obj and obj.imagen:
+                return format_html('<img src="{}" width="100" style="border-radius: 5px;" />', obj.imagen.url)
+        except:
+            return "-"
         return "-"
     vista_previa_imagen.short_description = "Imagen"
 
@@ -155,6 +169,7 @@ class VentaGarageAdmin(admin.ModelAdmin):
     list_display = ('nombreproducto', 'valordelbien', 'estadoproducto', 'activarparaqueseveaenfront')
     list_filter = ('estadoproducto', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
+    ordering = ('pk',)
 
 # --- PERSONALIZACIÓN DEL TÍTULO DEL PANEL ---
 admin.site.site_header = "Panel de Administración"
