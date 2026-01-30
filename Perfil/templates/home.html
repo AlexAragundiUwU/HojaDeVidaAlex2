@@ -349,57 +349,68 @@
             url = url.replace('http://', 'https://');
         }
 
+        console.log("URL original:", url);
+
         document.getElementById('tituloVisor').innerText = titulo;
         var visorContainer = document.getElementById('visorContainer');
         visorContainer.innerHTML = ''; // Limpiar contenido previo
 
-        var extension = url.split('.').pop().toLowerCase();
+        // DETECCIÓN DE EXTENSIÓN ROBUSTA (Ignora query params like ?token=...)
+        // Esto arregla el bug donde 'pdf?token=123' no era igual a 'pdf'
+        var cleanUrl = url.split(/[#?]/)[0];
+        var extension = cleanUrl.split('.').pop().trim().toLowerCase();
         
-        // --- ESTRATEGIA INFALIBLE: CLOUDINARY PDF -> JPG ---
-        // Si es PDF, le decimos a Cloudinary que nos de la "Foto" de la primera página
+        console.log("Extension detectada:", extension);
+
+        // --- ESTRATEGIA PDF: GOOGLE DOCS VIEWER ---
         if (extension === 'pdf') {
-            // Truco: Cambiar la extensión .pdf a .jpg genera una vista previa automática
-            var previewUrl = url.substring(0, url.lastIndexOf('.')) + ".jpg";
+            // Usamos Google Docs Viewer que es el más compatible para PDFs externos
+            var googleViewerUrl = "https://docs.google.com/gview?url=" + encodeURIComponent(url) + "&embedded=true";
             
-            // 1. Mostrar la imagen (Vista Previa)
-            var img = document.createElement('img');
-            img.src = previewUrl;
-            img.className = "img-fluid border border-secondary";
-            img.style.maxHeight = "75vh";
-            img.alt = "Vista previa del certificado";
+            var iframe = document.createElement('iframe');
+            iframe.src = googleViewerUrl;
+            iframe.style.width = "100%";
+            iframe.style.height = "75vh";
+            iframe.style.border = "none";
+            iframe.style.backgroundColor = "#fff"; // Fondo blanco para ver mejor
             
-            // Manejo de error si la conversión falla (fallback a icono)
-            img.onerror = function() {
-                this.style.display = 'none';
-                visorContainer.innerHTML += '<div class="text-white p-5"><i class="bi bi-file-pdf display-1"></i><p class="mt-3">Vista previa no disponible.</p></div>';
-            };
-
-            visorContainer.appendChild(img);
-
-            // 2. Botón para descargar el PDF Original
+            // Mensaje de carga
+            visorContainer.innerHTML = '<div class="text-white mb-2">Cargando vista previa...</div>';
+            
+            // Botón de respaldo (Descargar)
             var divBtn = document.createElement('div');
-            divBtn.className = "p-3 w-100 mt-2";
-            // ?fl_attachment fuerza la descarga en el navegador
-            divBtn.innerHTML = `<a href="${url}?fl_attachment" class="btn btn-cyber btn-lg"><i class="bi bi-download me-2"></i>Descargar PDF Original</a>`;
+            divBtn.className = "p-3 w-100";
+            // ?fl_attachment para forzar descarga en Cloudinary si es necesario
+            var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
+            
+            divBtn.innerHTML = `<a href="${downloadUrl}" target="_blank" class="btn btn-cyber"><i class="bi bi-download me-2"></i>Descargar PDF Original</a>`;
+            
+            visorContainer.appendChild(iframe);
             visorContainer.appendChild(divBtn);
         } 
         
-        // --- SI YA ES IMAGEN ---
-        else {
+        // --- ESTRATEGIA IMAGEN ---
+        else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
             var img = document.createElement('img');
             img.src = url;
             img.className = "img-fluid";
-            img.style.maxHeight = "80vh";
-            visorContainer.appendChild(img);
+            img.style.maxHeight = "75vh";
             
-            // Botón de descarga simple
             var divBtn = document.createElement('div');
-            divBtn.className = "p-3 w-100 mt-2";
-            divBtn.innerHTML = `<a href="${url}?fl_attachment" class="btn btn-cyber"><i class="bi bi-download me-2"></i>Descargar Imagen</a>`;
+            divBtn.className = "p-3 w-100";
+            var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
+            divBtn.innerHTML = `<a href="${downloadUrl}" class="btn btn-cyber"><i class="bi bi-download me-2"></i>Descargar Imagen</a>`;
+            
+            visorContainer.appendChild(img);
             visorContainer.appendChild(divBtn);
         }
+        
+        // --- OTROS FORMATOS ---
+        else {
+             var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
+             visorContainer.innerHTML = `<div class="p-5 text-white">Vista previa no disponible para este formato.<br><br><a href="${downloadUrl}" class="btn btn-cyber">Descargar Archivo</a></div>`;
+        }
 
-        // Mostrar Modal
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
         myModal.show();
     }
@@ -434,9 +445,8 @@
 {% endblock %}
 ```
 
-### 2. Comandos Finales (Solo copia, pega y enter)
-
+### Comandos para subir (Ejecútalos de nuevo):
 ```bash
 git add .
-git commit -m "Fix Final: Previsualizar como IMG y descargar como PDF"
+git commit -m "Fix final: Visor PDF con deteccion de extension corregida"
 git push origin main
