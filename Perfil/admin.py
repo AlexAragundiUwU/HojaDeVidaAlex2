@@ -2,6 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.utils.html import format_html # Importamos format_html para generar HTML seguro
 from .models import (
     DatosPersonales, ExperienciaLaboral, Reconocimientos, 
     CursosRealizados, ProductosAcademicos, ProductosLaborales, VentaGarage
@@ -97,15 +98,42 @@ class ExperienciaLaboralAdmin(admin.ModelAdmin):
 @admin.register(Reconocimientos)
 class ReconocimientosAdmin(admin.ModelAdmin):
     form = ReconocimientosForm
-    list_display = ('descripcionreconocimiento', 'tiporeconocimiento', 'entidadpatrocinadora', 'activarparaqueseveaenfront')
+    # Agregamos 'vista_previa_certificado' a list_display
+    list_display = ('descripcionreconocimiento', 'tiporeconocimiento', 'entidadpatrocinadora', 'vista_previa_certificado', 'activarparaqueseveaenfront')
     list_filter = ('tiporeconocimiento',)
     list_editable = ('activarparaqueseveaenfront',)
+
+    # Método para mostrar la vista previa
+    def vista_previa_certificado(self, obj):
+        if obj.certificado: # Asumiendo que el campo se llama 'certificado' en tu modelo
+            url = obj.certificado.url
+            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                 return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', url)
+            else:
+                 return format_html('<a href="{}" target="_blank">Ver Archivo</a>', url)
+        return "Sin certificado"
+    
+    vista_previa_certificado.short_description = "Certificado"
 
 @admin.register(CursosRealizados)
 class CursosRealizadosAdmin(admin.ModelAdmin):
     form = CursosRealizadosForm
-    list_display = ('nombrecurso', 'entidadpatrocinadora', 'totalhoras', 'activarparaqueseveaenfront')
+    # Agregamos 'vista_previa_certificado' a list_display
+    list_display = ('nombrecurso', 'entidadpatrocinadora', 'totalhoras', 'vista_previa_certificado', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
+
+    # Método para mostrar la vista previa
+    def vista_previa_certificado(self, obj):
+        if obj.certificado: # Asumiendo que el campo se llama 'certificado' en tu modelo
+            url = obj.certificado.url
+            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                 return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', url)
+            else:
+                 return format_html('<a href="{}" target="_blank">Ver Archivo</a>', url)
+        return "Sin certificado"
+
+    vista_previa_certificado.short_description = "Certificado"
+
 
 @admin.register(ProductosAcademicos)
 class ProductosAcademicosAdmin(admin.ModelAdmin):
