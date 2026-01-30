@@ -43,7 +43,7 @@
         background: var(--card-bg); 
         border: 1px solid #222; 
         border-radius: 4px; 
-        padding: 25px; 
+        padding: 35px 20px 20px; 
         height: 100%; 
         position: relative; 
         transition: 0.3s;
@@ -54,6 +54,23 @@
     .summary-card:hover {
         border-color: var(--neon-green);
         transform: translateY(-5px);
+    }
+
+    /* Botón X para ocultar */
+    .btn-close-cyber {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        color: #444;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: 0.3s;
+        line-height: 1;
+        z-index: 10;
+    }
+    .btn-close-cyber:hover {
+        color: #ff003c;
+        text-shadow: 0 0 8px #ff003c;
     }
 
     .count-badge { 
@@ -72,20 +89,20 @@
     .btn-action-group { 
         display: flex; 
         gap: 8px; 
-        margin-top: 10px; 
+        margin-top: 8px; 
     }
 
     .btn-mini-cyber { 
         background: rgba(0, 255, 65, 0.05); 
         border: 1px solid var(--neon-green); 
         color: var(--neon-green); 
-        font-size: 0.7rem; 
-        padding: 4px 10px; 
+        font-size: 0.65rem; 
+        padding: 3px 8px; 
         cursor: pointer; 
         text-decoration: none; 
         display: inline-flex; 
         align-items: center; 
-        gap: 6px; 
+        gap: 5px; 
         transition: 0.3s; 
         font-family: 'Roboto Mono', monospace;
     }
@@ -93,16 +110,16 @@
     .btn-mini-cyber:hover { 
         background: var(--neon-green); 
         color: #000; 
-        box-shadow: 0 0 15px var(--neon-green); 
+        box-shadow: 0 0 10px var(--neon-green); 
     }
 
     .section-title {
         color: #fff;
         border-bottom: 1px solid #333;
         padding-bottom: 10px;
-        margin-top: 20px;
+        margin-top: 15px;
         margin-bottom: 15px;
-        font-size: 1.1rem;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         display: flex;
@@ -118,10 +135,25 @@
     }
 
     .text-white { color: #fff !important; }
-    .text-muted-cyber { color: #888 !important; font-size: 0.8rem; }
-    .item-list { margin-bottom: 15px; }
-    .item-list li { border-left: 2px solid #333; padding-left: 12px; margin-bottom: 12px; list-style: none; }
+    .text-muted-cyber { color: #888 !important; font-size: 0.75rem; }
+    .item-list { margin-bottom: 15px; flex-grow: 1; }
+    .item-list li { border-left: 2px solid #333; padding-left: 12px; margin-bottom: 15px; list-style: none; }
     .item-list li:hover { border-left-color: var(--neon-green); }
+
+    .btn-main-cyber {
+        border: 1px solid var(--neon-green);
+        color: var(--neon-green);
+        text-decoration: none;
+        font-size: 0.75rem;
+        padding: 8px;
+        text-align: center;
+        transition: 0.3s;
+        background: transparent;
+    }
+    .btn-main-cyber:hover {
+        background: var(--neon-green);
+        color: #000;
+    }
 </style>
 
 <div class="hero-section">
@@ -151,6 +183,7 @@
     {% if perfil.mostrar_experiencia %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
+            <a href="?ocultar=mostrar_experiencia" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_exp }} REGISTROS</div>
             <h5 class="section-title"><i class="bi bi-briefcase"></i> Experiencia</h5>
             <ul class="item-list p-0">
@@ -161,21 +194,23 @@
                 </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'experiencia' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER HISTORIAL</a>
+            <a href="{% url 'experiencia' %}" class="btn-main-cyber">VER HISTORIAL</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 2. CURSOS (CON BOTONES) -->
+    <!-- 2. CURSOS -->
     {% if perfil.mostrar_cursos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
+            <a href="?ocultar=mostrar_cursos" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_cursos }} CURSOS</div>
             <h5 class="section-title"><i class="bi bi-mortarboard"></i> Cursos</h5>
             <ul class="item-list p-0">
                 {% for curso in resumen_cursos %}
                 <li>
                     <div class="text-white fw-bold">{{ curso.nombrecurso }}</div>
+                    <div class="text-muted-cyber">{{ curso.entidadpatrocinadora }}</div>
                     <div class="btn-action-group">
                         {% if curso.imagen_preview %}
                         <button class="btn-mini-cyber" onclick="lanzarVisor('{{ curso.imagen_preview.url }}', '{{ curso.nombrecurso }}')">
@@ -191,21 +226,23 @@
                 </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'cursos' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER CERTIFICADOS</a>
+            <a href="{% url 'cursos' %}" class="btn-main-cyber">VER CERTIFICADOS</a>
         </div>
     </div>
     {% endif %}
 
-    <!-- 3. LOGROS (CON BOTONES) -->
+    <!-- 3. LOGROS -->
     {% if perfil.mostrar_logros %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
+            <a href="?ocultar=mostrar_logros" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_logros }} LOGROS</div>
             <h5 class="section-title"><i class="bi bi-trophy"></i> Logros</h5>
             <ul class="item-list p-0">
                 {% for rec in resumen_rec %}
                 <li>
                     <div class="text-white fw-bold">{{ rec.descripcionreconocimiento }}</div>
+                    <div class="text-muted-cyber">{{ rec.entidadpatrocinadora }}</div>
                     <div class="btn-action-group">
                         {% if rec.imagen_preview %}
                         <button class="btn-mini-cyber" onclick="lanzarVisor('{{ rec.imagen_preview.url }}', '{{ rec.descripcionreconocimiento }}')">
@@ -221,7 +258,7 @@
                 </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'reconocimientos' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER GALERÍA</a>
+            <a href="{% url 'reconocimientos' %}" class="btn-main-cyber">VER GALERÍA</a>
         </div>
     </div>
     {% endif %}
@@ -230,6 +267,7 @@
     {% if perfil.mostrar_academicos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
+            <a href="?ocultar=mostrar_academicos" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_acad }} RECURSOS</div>
             <h5 class="section-title"><i class="bi bi-book"></i> Académicos</h5>
             <ul class="item-list p-0">
@@ -240,7 +278,7 @@
                 </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'productos_academicos' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER BIBLIOTECA</a>
+            <a href="{% url 'productos_academicos' %}" class="btn-main-cyber">VER BIBLIOTECA</a>
         </div>
     </div>
     {% endif %}
@@ -249,16 +287,18 @@
     {% if perfil.mostrar_proyectos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
+            <a href="?ocultar=mostrar_proyectos" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_proyectos }} PROYECTOS</div>
             <h5 class="section-title"><i class="bi bi-cpu"></i> Proyectos</h5>
             <ul class="item-list p-0">
                 {% for lab in resumen_lab %}
                 <li>
                     <div class="text-white fw-bold">{{ lab.nombreproducto }}</div>
+                    <div class="text-muted-cyber">{{ lab.fechaproducto }}</div>
                 </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'productos_laborales' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">VER PORTAFOLIO</a>
+            <a href="{% url 'productos_laborales' %}" class="btn-main-cyber">VER PORTAFOLIO</a>
         </div>
     </div>
     {% endif %}
@@ -267,6 +307,7 @@
     {% if perfil.mostrar_garage %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
+            <a href="?ocultar=mostrar_garage" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_garage }} ITEMS</div>
             <h5 class="section-title"><i class="bi bi-shop"></i> Garaje</h5>
             <div class="d-flex flex-wrap gap-2 mb-3">
@@ -274,7 +315,7 @@
                 <span class="badge border border-success text-success p-2">{{ item.nombreproducto }}</span>
                 {% endfor %}
             </div>
-            <a href="{% url 'garage' %}" class="btn-mini-cyber w-100 justify-content-center mt-auto">IR A TIENDA</a>
+            <a href="{% url 'garage' %}" class="btn-main-cyber mt-auto">IR A TIENDA</a>
         </div>
     </div>
     {% endif %}
@@ -295,7 +336,7 @@
     </div>
 </div>
 
-<!-- MODAL CONFIGURACIÓN CV -->
+<!-- MODAL CONFIGURACIÓN CV CORREGIDO -->
 <div class="modal fade" id="downloadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -304,27 +345,32 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <!-- Se añaden value="true" para que los filtros funcionen -->
                 <form action="{% url 'vista_previa_cv' %}" method="get" target="_blank">
                     <input type="hidden" name="cv" value="true">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="experiencia" checked>
+                        <input class="form-check-input" type="checkbox" name="experiencia" value="true" checked>
                         <label class="form-check-label text-white">Incluir Experiencia</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="cursos" checked>
+                        <input class="form-check-input" type="checkbox" name="cursos" value="true" checked>
                         <label class="form-check-label text-white">Incluir Cursos</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="logros" checked>
+                        <input class="form-check-input" type="checkbox" name="logros" value="true" checked>
                         <label class="form-check-label text-white">Incluir Logros</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="academicos" checked>
+                        <input class="form-check-input" type="checkbox" name="academicos" value="true" checked>
                         <label class="form-check-label text-white">Incluir Académicos</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="proyectos" checked>
+                        <input class="form-check-input" type="checkbox" name="proyectos" value="true" checked>
                         <label class="form-check-label text-white">Incluir Proyectos</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="garage" value="true" checked>
+                        <label class="form-check-label text-white">Incluir Garaje</label>
                     </div>
                     <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold">DESCARGAR DOCUMENTO</button>
                 </form>
