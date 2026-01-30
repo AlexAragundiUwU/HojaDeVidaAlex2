@@ -5,175 +5,58 @@
 
 {% block content %}
 <style>
-    /* Estilos Globales Cyberpunk */
-    :root {
-        --neon-green: #00ff41;
-        --dark-bg: #0a0a0a;
-        --card-bg: #0d0d0d;
-    }
-
-    .hero-section { 
-        background: var(--dark-bg); 
-        padding: 3rem; 
-        border: 1px solid #1a1a1a; 
-        margin-bottom: 2rem; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-    }
-
-    .profile-img { 
-        width: 170px; 
-        height: 170px; 
-        object-fit: cover; 
-        border: 3px solid var(--neon-green); 
-        padding: 5px; 
-        border-radius: 50%; 
-        display: block; 
-        margin: 0 auto; 
-        filter: grayscale(100%);
-        transition: 0.5s; 
-    }
-
-    .profile-img:hover { 
-        filter: grayscale(0%);
-        box-shadow: 0 0 25px var(--neon-green); 
-        transform: scale(1.05); 
-    }
-
-    .summary-card { 
-        background: var(--card-bg); 
-        border: 1px solid #222; 
-        border-radius: 4px; 
-        padding: 35px 20px 20px; 
-        height: 100%; 
-        position: relative; 
-        transition: 0.3s;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .summary-card:hover {
-        border-color: var(--neon-green);
-        transform: translateY(-5px);
-    }
-
-    /* Botón X para ocultar */
-    .btn-close-cyber {
-        position: absolute;
-        top: 8px;
-        right: 10px;
-        color: #444;
-        text-decoration: none;
-        font-size: 1.2rem;
-        transition: 0.3s;
-        line-height: 1;
-        z-index: 10;
-    }
-    .btn-close-cyber:hover {
-        color: #ff003c;
-        text-shadow: 0 0 8px #ff003c;
-    }
-
-    .count-badge { 
-        position: absolute; 
-        top: 10px; 
-        left: 10px; 
-        background: rgba(0, 255, 65, 0.1); 
-        color: var(--neon-green); 
-        border: 1px solid var(--neon-green); 
-        padding: 2px 8px; 
-        font-size: 0.65rem; 
-        border-radius: 3px; 
-    }
+    :root { --neon-green: #00ff41; --dark-bg: #0a0a0a; --card-bg: #0d0d0d; }
+    .hero-section { background: var(--dark-bg); padding: 3rem; border: 1px solid #1a1a1a; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+    .profile-img { width: 150px; height: 150px; object-fit: cover; border: 2px solid var(--neon-green); padding: 3px; border-radius: 50%; display: block; margin-bottom: 1rem; filter: grayscale(100%); transition: 0.5s; }
+    .profile-img:hover { filter: grayscale(0%); box-shadow: 0 0 20px var(--neon-green); transform: scale(1.05); }
     
-    /* Botones de Acción */
-    .btn-action-group { 
-        display: flex; 
-        gap: 8px; 
-        margin-top: 8px; 
-    }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+    .info-item { font-size: 0.85rem; color: #ccc; display: flex; align-items: center; gap: 8px; }
+    .info-item i { color: var(--neon-green); }
 
-    .btn-mini-cyber { 
-        background: rgba(0, 255, 65, 0.05); 
-        border: 1px solid var(--neon-green); 
-        color: var(--neon-green); 
-        font-size: 0.65rem; 
-        padding: 3px 8px; 
-        cursor: pointer; 
-        text-decoration: none; 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 5px; 
-        transition: 0.3s; 
-        font-family: 'Roboto Mono', monospace;
-    }
-
-    .btn-mini-cyber:hover { 
-        background: var(--neon-green); 
-        color: #000; 
-        box-shadow: 0 0 10px var(--neon-green); 
-    }
-
-    .section-title {
-        color: #fff;
-        border-bottom: 1px solid #333;
-        padding-bottom: 10px;
-        margin-top: 15px;
-        margin-bottom: 15px;
-        font-size: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    /* Modal Visor */
-    .modal-content-cyber {
-        background: #000;
-        border: 2px solid var(--neon-green);
-        color: #fff;
-    }
-
-    .text-white { color: #fff !important; }
-    .text-muted-cyber { color: #888 !important; font-size: 0.75rem; }
-    .item-list { margin-bottom: 15px; flex-grow: 1; }
-    .item-list li { border-left: 2px solid #333; padding-left: 12px; margin-bottom: 15px; list-style: none; }
+    .summary-card { background: var(--card-bg); border: 1px solid #222; border-radius: 4px; padding: 35px 20px 20px; height: 100%; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
+    .summary-card:hover { border-color: var(--neon-green); transform: translateY(-5px); }
+    .btn-close-cyber { position: absolute; top: 8px; right: 10px; color: #444; text-decoration: none; font-size: 1.2rem; z-index: 10; }
+    .btn-close-cyber:hover { color: #ff003c; text-shadow: 0 0 8px #ff003c; }
+    .count-badge { position: absolute; top: 10px; left: 10px; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 2px 8px; font-size: 0.6rem; border-radius: 3px; }
+    
+    .section-title { color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; font-size: 1rem; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+    .item-list { padding: 0; margin-bottom: 15px; flex-grow: 1; }
+    .item-list li { border-left: 2px solid #333; padding-left: 12px; margin-bottom: 12px; list-style: none; color: #eee; font-size: 0.9rem; transition: 0.3s; }
     .item-list li:hover { border-left-color: var(--neon-green); }
+    
+    .garage-img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; border: 1px solid #333; }
+    .btn-view-more { border: 1px solid var(--neon-green); color: var(--neon-green); text-decoration: none; font-size: 0.75rem; padding: 8px; text-align: center; display: block; margin-top: auto; transition: 0.3s; background: transparent; }
+    .btn-view-more:hover { background: var(--neon-green); color: #000; }
 
-    .btn-main-cyber {
-        border: 1px solid var(--neon-green);
-        color: var(--neon-green);
-        text-decoration: none;
-        font-size: 0.75rem;
-        padding: 8px;
-        text-align: center;
-        transition: 0.3s;
-        background: transparent;
-    }
-    .btn-main-cyber:hover {
-        background: var(--neon-green);
-        color: #000;
-    }
+    .modal-content-cyber { background: #000; border: 2px solid var(--neon-green); color: #fff; box-shadow: 0 0 30px rgba(0,255,0,0.2); }
 </style>
 
 <div class="hero-section">
-    <div class="row align-items-center">
-        <div class="col-lg-3 text-center">
+    <div class="row">
+        <div class="col-md-3 text-center">
             {% if perfil.fotoperfil %}
-                <img src="{{ perfil.fotoperfil.url }}" class="profile-img shadow-lg" alt="Foto de Perfil">
+                <img src="{{ perfil.fotoperfil.url }}" class="profile-img mx-auto">
             {% endif %}
         </div>
-        <div class="col-lg-6">
-            <h1 class="text-white mb-2">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-            <p class="text-success mb-0"><i class="bi bi-envelope-fill me-2"></i>{{ perfil.email_contacto }}</p>
-            <p class="text-muted-cyber mt-2">{{ perfil.descripcionperfil|truncatewords:25 }}</p>
-        </div>
-        <div class="col-lg-3 text-center">
-            {% if perfil.archivocv %}
-                <button class="btn btn-outline-success btn-lg px-4" data-bs-toggle="modal" data-bs-target="#downloadModal">
-                    <i class="bi bi-file-earmark-pdf me-2"></i>GENERAR CV
-                </button>
-            {% endif %}
+        <div class="col-md-9">
+            <h1 class="text-white mb-1">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+            <p class="text-success mb-3 fw-bold">{{ perfil.numerocedula }} | {{ perfil.nacionalidad }}</p>
+            
+            <div class="info-grid">
+                <div class="info-item"><i class="bi bi-envelope"></i> {{ perfil.email_contacto }}</div>
+                <div class="info-item"><i class="bi bi-telephone"></i> {{ perfil.telefonofijo|default:"N/A" }}</div>
+                <div class="info-item"><i class="bi bi-phone"></i> {{ perfil.telefonoconvencional|default:"N/A" }}</div>
+                <div class="info-item"><i class="bi bi-geo-alt"></i> {{ perfil.direcciondomiciliaria }}</div>
+                <div class="info-item"><i class="bi bi-calendar-event"></i> {{ perfil.fechanacimiento }}</div>
+                <div class="info-item"><i class="bi bi-globe"></i> {{ perfil.sitioweb|default:"Sin sitio" }}</div>
+            </div>
+            
+            <div class="mt-4 d-flex gap-3">
+                {% if perfil.archivocv %}
+                <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#downloadModal">GENERAR CV</button>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -185,16 +68,13 @@
         <div class="card summary-card">
             <a href="?ocultar=mostrar_experiencia" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_exp }} REGISTROS</div>
-            <h5 class="section-title"><i class="bi bi-briefcase"></i> Experiencia</h5>
-            <ul class="item-list p-0">
+            <h5 class="section-title"><i class="bi bi-briefcase me-2"></i>Experiencia</h5>
+            <ul class="item-list">
                 {% for exp in resumen_exp %}
-                <li>
-                    <div class="text-white fw-bold">{{ exp.cargodesempenado }}</div>
-                    <div class="text-muted-cyber">@ {{ exp.nombrempresa }}</div>
-                </li>
+                <li><strong>{{ exp.cargodesempenado }}</strong><br><small class="text-muted">@ {{ exp.nombrempresa }}</small></li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'experiencia' %}" class="btn-main-cyber">VER HISTORIAL</a>
+            <a href="{% url 'experiencia' %}" class="btn-view-more">VER HISTORIAL</a>
         </div>
     </div>
     {% endif %}
@@ -205,28 +85,13 @@
         <div class="card summary-card">
             <a href="?ocultar=mostrar_cursos" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_cursos }} CURSOS</div>
-            <h5 class="section-title"><i class="bi bi-mortarboard"></i> Cursos</h5>
-            <ul class="item-list p-0">
+            <h5 class="section-title"><i class="bi bi-mortarboard me-2"></i>Cursos</h5>
+            <ul class="item-list">
                 {% for curso in resumen_cursos %}
-                <li>
-                    <div class="text-white fw-bold">{{ curso.nombrecurso }}</div>
-                    <div class="text-muted-cyber">{{ curso.entidadpatrocinadora }}</div>
-                    <div class="btn-action-group">
-                        {% if curso.imagen_preview %}
-                        <button class="btn-mini-cyber" onclick="lanzarVisor('{{ curso.imagen_preview.url }}', '{{ curso.nombrecurso }}')">
-                            <i class="bi bi-eye"></i> VER
-                        </button>
-                        {% endif %}
-                        {% if curso.rutacertificado %}
-                        <a href="{{ curso.rutacertificado.url }}" target="_blank" class="btn-mini-cyber" download>
-                            <i class="bi bi-download"></i> PDF
-                        </a>
-                        {% endif %}
-                    </div>
-                </li>
+                <li><strong>{{ curso.nombrecurso }}</strong><br><small class="text-muted">{{ curso.entidadpatrocinadora }}</small></li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'cursos' %}" class="btn-main-cyber">VER CERTIFICADOS</a>
+            <a href="{% url 'cursos' %}" class="btn-view-more">VER CERTIFICADOS</a>
         </div>
     </div>
     {% endif %}
@@ -237,28 +102,13 @@
         <div class="card summary-card">
             <a href="?ocultar=mostrar_logros" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_logros }} LOGROS</div>
-            <h5 class="section-title"><i class="bi bi-trophy"></i> Logros</h5>
-            <ul class="item-list p-0">
+            <h5 class="section-title"><i class="bi bi-trophy me-2"></i>Logros</h5>
+            <ul class="item-list">
                 {% for rec in resumen_rec %}
-                <li>
-                    <div class="text-white fw-bold">{{ rec.descripcionreconocimiento }}</div>
-                    <div class="text-muted-cyber">{{ rec.entidadpatrocinadora }}</div>
-                    <div class="btn-action-group">
-                        {% if rec.imagen_preview %}
-                        <button class="btn-mini-cyber" onclick="lanzarVisor('{{ rec.imagen_preview.url }}', '{{ rec.descripcionreconocimiento }}')">
-                            <i class="bi bi-eye"></i> VER
-                        </button>
-                        {% endif %}
-                        {% if rec.rutacertificado %}
-                        <a href="{{ rec.rutacertificado.url }}" target="_blank" class="btn-mini-cyber" download>
-                            <i class="bi bi-download"></i> PDF
-                        </a>
-                        {% endif %}
-                    </div>
-                </li>
+                <li><strong>{{ rec.descripcionreconocimiento }}</strong><br><small class="text-muted">{{ rec.entidadpatrocinadora }}</small></li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'reconocimientos' %}" class="btn-main-cyber">VER GALERÍA</a>
+            <a href="{% url 'reconocimientos' %}" class="btn-view-more">VER GALERÍA</a>
         </div>
     </div>
     {% endif %}
@@ -269,16 +119,13 @@
         <div class="card summary-card">
             <a href="?ocultar=mostrar_academicos" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_acad }} RECURSOS</div>
-            <h5 class="section-title"><i class="bi bi-book"></i> Académicos</h5>
-            <ul class="item-list p-0">
+            <h5 class="section-title"><i class="bi bi-book me-2"></i>Académicos</h5>
+            <ul class="item-list">
                 {% for acad in resumen_acad %}
-                <li>
-                    <div class="text-white fw-bold">{{ acad.nombrerecurso }}</div>
-                    <div class="text-muted-cyber">{{ acad.clasificador }}</div>
-                </li>
+                <li><strong>{{ acad.nombrerecurso }}</strong><br><small class="text-muted">{{ acad.clasificador }}</small></li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'productos_academicos' %}" class="btn-main-cyber">VER BIBLIOTECA</a>
+            <a href="{% url 'productos_academicos' %}" class="btn-view-more">VER BIBLIOTECA</a>
         </div>
     </div>
     {% endif %}
@@ -289,16 +136,13 @@
         <div class="card summary-card">
             <a href="?ocultar=mostrar_proyectos" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_proyectos }} PROYECTOS</div>
-            <h5 class="section-title"><i class="bi bi-cpu"></i> Proyectos</h5>
-            <ul class="item-list p-0">
+            <h5 class="section-title"><i class="bi bi-cpu me-2"></i>Proyectos</h5>
+            <ul class="item-list">
                 {% for lab in resumen_lab %}
-                <li>
-                    <div class="text-white fw-bold">{{ lab.nombreproducto }}</div>
-                    <div class="text-muted-cyber">{{ lab.fechaproducto }}</div>
-                </li>
+                <li><strong>{{ lab.nombreproducto }}</strong><br><small class="text-muted">{{ lab.fechaproducto }}</small></li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'productos_laborales' %}" class="btn-main-cyber">VER PORTAFOLIO</a>
+            <a href="{% url 'productos_laborales' %}" class="btn-view-more">VER PORTAFOLIO</a>
         </div>
     </div>
     {% endif %}
@@ -309,34 +153,24 @@
         <div class="card summary-card">
             <a href="?ocultar=mostrar_garage" class="btn-close-cyber" title="Ocultar sección">×</a>
             <div class="count-badge">{{ total_garage }} ITEMS</div>
-            <h5 class="section-title"><i class="bi bi-shop"></i> Garaje</h5>
-            <div class="d-flex flex-wrap gap-2 mb-3">
+            <h5 class="section-title"><i class="bi bi-shop me-2"></i>Garaje</h5>
+            <div class="row g-2 mb-3">
                 {% for item in resumen_garage %}
-                <span class="badge border border-success text-success p-2">{{ item.nombreproducto }}</span>
+                <div class="col-6">
+                    {% if item.imagen %}
+                    <img src="{{ item.imagen.url }}" class="garage-img">
+                    {% endif %}
+                    <div class="text-white x-small text-truncate">{{ item.nombreproducto }}</div>
+                </div>
                 {% endfor %}
             </div>
-            <a href="{% url 'garage' %}" class="btn-main-cyber mt-auto">IR A TIENDA</a>
+            <a href="{% url 'garage' %}" class="btn-view-more mt-auto">IR A TIENDA</a>
         </div>
     </div>
     {% endif %}
 </div>
 
-<!-- MODAL VISOR DE IMÁGENES -->
-<div class="modal fade" id="modalVisorCyber" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content modal-content-cyber">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title text-white" id="visorTitulo">Certificado</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center p-0 bg-black">
-                <img id="visorImg" src="" class="img-fluid" style="max-height: 85vh; padding: 15px;">
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL CONFIGURACIÓN CV CORREGIDO -->
+<!-- MODAL GENERADOR DE CV COMPLETO -->
 <div class="modal fade" id="downloadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -345,9 +179,9 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Se añaden value="true" para que los filtros funcionen -->
                 <form action="{% url 'vista_previa_cv' %}" method="get" target="_blank">
                     <input type="hidden" name="cv" value="true">
+                    
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="experiencia" value="true" checked>
                         <label class="form-check-label text-white">Incluir Experiencia</label>
@@ -372,19 +206,11 @@
                         <input class="form-check-input" type="checkbox" name="garage" value="true" checked>
                         <label class="form-check-label text-white">Incluir Garaje</label>
                     </div>
-                    <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold">DESCARGAR DOCUMENTO</button>
+
+                    <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold shadow">DESCARGAR DOCUMENTO PDF</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function lanzarVisor(url, titulo) {
-        document.getElementById('visorTitulo').innerText = titulo;
-        document.getElementById('visorImg').src = url;
-        var modal = new bootstrap.Modal(document.getElementById('modalVisorCyber'));
-        modal.show();
-    }
-</script>
 {% endblock %}
