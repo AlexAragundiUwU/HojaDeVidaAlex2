@@ -350,10 +350,13 @@
 
         document.getElementById('tituloVisor').innerText = titulo;
         var visor = document.getElementById('visorArchivo');
-        visor.src = url;
         
-        // Ya no intentamos abrir el modal con JS si Bootstrap falla,
-        // porque los botones ahora tienen data-bs-toggle="modal"
+        // ESTRATEGIA UNIVERSAL: Si es PDF, usar Google Docs Viewer. Si es Imagen, directo.
+        if (url.toLowerCase().endsWith('.pdf')) {
+            visor.src = "https://docs.google.com/gview?url=" + encodeURIComponent(url) + "&embedded=true";
+        } else {
+            visor.src = url;
+        }
     }
 
     // Limpiar iframe al cerrar para detener descargas o videos
@@ -382,3 +385,10 @@
     }
 </script>
 {% endblock %}
+```
+
+### Comandos para subir (Ejecútalos de nuevo):
+```bash
+git add .
+git commit -m "Fix final: Visor universal con Google Docs para PDFs"
+git push origin main
