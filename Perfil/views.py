@@ -62,7 +62,7 @@ def home(request):
         'resumen_acad': ProductosAcademicos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
-        ).order_by('-id')[:3] if perfil else [],
+        ).order_by('-idproductoacademico')[:3] if perfil else [],
 
         'resumen_lab': ProductosLaborales.objects.filter(
             idperfilconqueestaactivo=perfil, 
@@ -121,7 +121,7 @@ def vista_previa_cv(request):
         context['academicos'] = ProductosAcademicos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
-        ).order_by('-id')
+        ).order_by('-idproductoacademico')
 
     return render(request, 'cv_print.html', context)
 
@@ -139,7 +139,7 @@ def productos_academicos(request):
     datos = ProductosAcademicos.objects.filter(
         idperfilconqueestaactivo=perfil, 
         activarparaqueseveaenfront=True
-    ).order_by('-id') if perfil else []
+    ).order_by('-idproductoacademico') if perfil else []
     return render(request, 'productos_academicos.html', {'datos': datos, 'perfil': perfil})
 
 def productos_laborales(request):
