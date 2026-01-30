@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from django.utils.html import format_html # Importamos format_html para generar HTML seguro
+from django.utils.html import format_html
 from .models import (
     DatosPersonales, ExperienciaLaboral, Reconocimientos, 
     CursosRealizados, ProductosAcademicos, ProductosLaborales, VentaGarage
@@ -20,7 +20,8 @@ class ExperienciaLaboralForm(forms.ModelForm):
         inicio = cleaned_data.get('fechainiciogestion')
         fin = cleaned_data.get('fechafingestion')
         
-        hoy = timezone.now().date()
+        # Usamos localdate() para respetar la zona horaria de Ecuador
+        hoy = timezone.localdate()
 
         if inicio and inicio > hoy:
             raise ValidationError({'fechainiciogestion': f"La fecha de inicio no puede ser futura. Hoy es {hoy.strftime('%d/%m/%Y')}."})
@@ -41,7 +42,7 @@ class CursosRealizadosForm(forms.ModelForm):
         inicio = cleaned_data.get('fechainicio')
         fin = cleaned_data.get('fechafin')
         
-        hoy = timezone.now().date()
+        hoy = timezone.localdate()
 
         if inicio and inicio > hoy:
             raise ValidationError({'fechainicio': f"El curso no puede iniciar en el futuro. Hoy es {hoy.strftime('%d/%m/%Y')}."})
@@ -59,7 +60,7 @@ class ReconocimientosForm(forms.ModelForm):
 
     def clean_fechareconocimiento(self):
         fecha = self.cleaned_data.get('fechareconocimiento')
-        hoy = timezone.now().date()
+        hoy = timezone.localdate()
         if fecha and fecha > hoy:
             raise ValidationError(f"La fecha del reconocimiento no puede ser futura. Hoy es {hoy.strftime('%d/%m/%Y')}.")
         return fecha
@@ -98,42 +99,39 @@ class ExperienciaLaboralAdmin(admin.ModelAdmin):
 @admin.register(Reconocimientos)
 class ReconocimientosAdmin(admin.ModelAdmin):
     form = ReconocimientosForm
-    # Agregamos 'vista_previa_certificado' a list_display
     list_display = ('descripcionreconocimiento', 'tiporeconocimiento', 'entidadpatrocinadora', 'vista_previa_certificado', 'activarparaqueseveaenfront')
     list_filter = ('tiporeconocimiento',)
     list_editable = ('activarparaqueseveaenfront',)
+    readonly_fields = ('vista_previa_certificado',) # Para verla dentro del formulario
 
-    # Método para mostrar la vista previa
     def vista_previa_certificado(self, obj):
-        if obj.certificado: # Asumiendo que el campo se llama 'certificado' en tu modelo
+        if obj and obj.certificado:
             url = obj.certificado.url
-            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                 return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', url)
+            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                 return format_html('<a href="{}" target="_blank"><img src="{}" width="100" style="border-radius: 5px; border: 1px solid #ccc;" /></a>', url, url)
             else:
-                 return format_html('<a href="{}" target="_blank">Ver Archivo</a>', url)
-        return "Sin certificado"
+                 return format_html('<a href="{}" target="_blank" class="button">Ver Archivo</a>', url)
+        return "Guarda para ver la vista previa"
     
-    vista_previa_certificado.short_description = "Certificado"
+    vista_previa_certificado.short_description = "Vista Previa"
 
 @admin.register(CursosRealizados)
 class CursosRealizadosAdmin(admin.ModelAdmin):
     form = CursosRealizadosForm
-    # Agregamos 'vista_previa_certificado' a list_display
     list_display = ('nombrecurso', 'entidadpatrocinadora', 'totalhoras', 'vista_previa_certificado', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
+    readonly_fields = ('vista_previa_certificado',) # Para verla dentro del formulario
 
-    # Método para mostrar la vista previa
     def vista_previa_certificado(self, obj):
-        if obj.certificado: # Asumiendo que el campo se llama 'certificado' en tu modelo
+        if obj and obj.certificado:
             url = obj.certificado.url
-            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                 return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', url)
+            if url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                 return format_html('<a href="{}" target="_blank"><img src="{}" width="100" style="border-radius: 5px; border: 1px solid #ccc;" /></a>', url, url)
             else:
-                 return format_html('<a href="{}" target="_blank">Ver Archivo</a>', url)
-        return "Sin certificado"
+                 return format_html('<a href="{}" target="_blank" class="button">Ver Archivo</a>', url)
+        return "Guarda para ver la vista previa"
 
-    vista_previa_certificado.short_description = "Certificado"
-
+    vista_previa_certificado.short_description = "Vista Previa"
 
 @admin.register(ProductosAcademicos)
 class ProductosAcademicosAdmin(admin.ModelAdmin):
@@ -142,8 +140,15 @@ class ProductosAcademicosAdmin(admin.ModelAdmin):
 
 @admin.register(ProductosLaborales)
 class ProductosLaboralesAdmin(admin.ModelAdmin):
-    list_display = ('nombreproducto', 'fechaproducto', 'imagen', 'activarparaqueseveaenfront')
+    list_display = ('nombreproducto', 'fechaproducto', 'vista_previa_imagen', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
+    readonly_fields = ('vista_previa_imagen',)
+
+    def vista_previa_imagen(self, obj):
+        if obj and obj.imagen:
+            return format_html('<img src="{}" width="100" style="border-radius: 5px;" />', obj.imagen.url)
+        return "-"
+    vista_previa_imagen.short_description = "Imagen"
 
 @admin.register(VentaGarage)
 class VentaGarageAdmin(admin.ModelAdmin):
