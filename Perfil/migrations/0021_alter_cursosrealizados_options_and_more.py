@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='experiencialaboral',
             name='idexperiencia',
-            field=models.AutoField(default=1, primary_key=True, serialize=False),
+            field=models.AutoField(primary_key=True, serialize=False),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -110,7 +110,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='productoslaborales',
             name='idproductolaboral',
-            field=models.AutoField(default=1, primary_key=True, serialize=False),
+            field=models.AutoField(primary_key=True, serialize=False),
             preserve_default=False,
         ),
         migrations.AddField(
