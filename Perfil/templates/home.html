@@ -195,11 +195,11 @@
                     <span class="text-truncate" style="max-width: 55%;">{{ rec.descripcionreconocimiento }}</span>
                     {% if rec.certificado %}
                     <div class="btn-action-group">
-                        <!-- Botón Visor -->
+                        <!-- Botón Visor: Muestra la IMAGEN -->
                         <button class="btn-mini-cyber" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver">
                             <i class="bi bi-eye"></i> VER
                         </button>
-                        <!-- Botón Descarga -->
+                        <!-- Botón Descarga: Descarga como PDF -->
                         <button class="btn-mini-cyber" onclick="descargarComoPdf('{{ rec.certificado.url }}')" title="Descargar como PDF">
                             <i class="bi bi-download"></i>
                         </button>
