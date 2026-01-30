@@ -5,7 +5,7 @@
 
 {% block content %}
 <style>
-    /* Estilos Home Cyberpunk */
+    /* Estilos Home Cyberpunk - Limpieza Total */
     .hero-section { 
         background: #0a0a0a; 
         padding: 3rem; 
@@ -20,11 +20,17 @@
     .hero-section::before, .hero-section::after { display: none !important; content: none !important; border: none !important; }
 
     .profile-img { 
-        width: 170px; height: 170px; object-fit: cover; 
-        border: 3px solid var(--neon-green); padding: 5px; 
-        background: rgba(0, 255, 65, 0.1); border-radius: 50%; 
-        filter: grayscale(100%) contrast(120%); transition: 0.5s; 
-        display: block; margin: 0 auto; 
+        width: 170px; 
+        height: 170px; 
+        object-fit: cover; 
+        border: 3px solid var(--neon-green); 
+        padding: 5px; 
+        background: rgba(0, 255, 65, 0.1); 
+        border-radius: 50%; 
+        filter: grayscale(100%) contrast(120%); 
+        transition: 0.5s; 
+        display: block; 
+        margin: 0 auto; 
     }
     .profile-img:hover { filter: grayscale(0%) contrast(100%); box-shadow: 0 0 25px var(--neon-green); transform: scale(1.05); }
 
@@ -36,13 +42,41 @@
     .btn-cyber { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px 30px; font-family: 'Roboto Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; display: inline-block; transition: 0.3s; cursor: pointer; }
     .btn-cyber:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
     
-    /* TARJETAS */
     .summary-card { background: #0d0d0d; border: 1px solid #222; border-radius: 4px; padding: 35px 20px 20px; height: 100%; transition: 0.3s; display: flex; flex-direction: column; position: relative; }
     .summary-card:hover { transform: translateY(-5px); border-color: var(--neon-green); box-shadow: 0 5px 15px rgba(0, 255, 65, 0.1); }
     
-    .count-badge { position: absolute; top: 10px; left: 10px; background: rgba(0, 255, 65, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); padding: 2px 8px; font-family: 'Roboto Mono', monospace; font-size: 0.65rem; border-radius: 3px; }
+    .count-badge { 
+        position: absolute; 
+        top: 10px; 
+        left: 10px; 
+        background: rgba(0, 255, 65, 0.1); 
+        color: var(--neon-green); 
+        border: 1px solid var(--neon-green); 
+        padding: 2px 8px; 
+        font-family: 'Roboto Mono', monospace; 
+        font-size: 0.65rem; 
+        border-radius: 3px; 
+    }
     
-    .btn-close-section { position: absolute; top: 10px; right: 10px; background: #000; border: 1px solid #333; color: #555; width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 10px; z-index: 10; transition: 0.3s; opacity: 0.3; }
+    .btn-close-section { 
+        position: absolute; 
+        top: 10px; 
+        right: 10px; 
+        background: #000; 
+        border: 1px solid #333; 
+        color: #555; 
+        width: 20px; 
+        height: 20px; 
+        border-radius: 4px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        text-decoration: none; 
+        font-size: 10px; 
+        z-index: 10; 
+        transition: 0.3s; 
+        opacity: 0.3;
+    }
     .section-wrapper:hover .btn-close-section { opacity: 1; border-color: #ff4d4d; color: #ff4d4d; }
     .btn-close-section:hover { background: #ff4d4d; color: #fff !important; }
 
@@ -54,7 +88,7 @@
     .summary-list li { margin-bottom: 8px; color: #ccc; font-size: 0.85rem; font-family: 'Roboto Mono', monospace; border-left: 2px solid #333; padding-left: 10px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
     .summary-card:hover .summary-list li { border-left-color: var(--neon-green); color: #fff; }
     
-    /* BOTONES VISIBLES */
+    /* Botones pequeños en las listas - VERDE NEÓN PARA VISIBILIDAD */
     .btn-action-group { display: flex; gap: 5px; }
     .btn-mini-cyber { 
         background: rgba(0, 255, 65, 0.1); 
@@ -163,14 +197,14 @@
                     <span class="text-truncate" style="max-width: 55%;">{{ curso.nombrecurso }}</span>
                     {% if curso.certificado %}
                     <div class="btn-action-group">
-                        <!-- Botón Visor: Abre modal con el PDF -->
+                        <!-- Botón Visor: Abre modal con la imagen -->
                         <button class="btn-mini-cyber" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver">
                             <i class="bi bi-eye"></i> VER
                         </button>
-                        <!-- Botón Descarga: Descarga el PDF directamente -->
-                        <a href="{{ curso.certificado.url }}" target="_blank" class="btn-mini-cyber" title="Descargar" download>
+                        <!-- Botón Descarga: Convierte la IMAGEN a PDF al descargar -->
+                        <button class="btn-mini-cyber" onclick="descargarComoPdf('{{ curso.certificado.url }}')" title="Descargar como PDF">
                             <i class="bi bi-download"></i>
-                        </a>
+                        </button>
                     </div>
                     {% endif %}
                 </li>
@@ -195,14 +229,14 @@
                     <span class="text-truncate" style="max-width: 55%;">{{ rec.descripcionreconocimiento }}</span>
                     {% if rec.certificado %}
                     <div class="btn-action-group">
-                        <!-- Botón Visor: Abre modal con el PDF -->
+                        <!-- Botón Visor: Abre modal con la imagen -->
                         <button class="btn-mini-cyber" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver">
                             <i class="bi bi-eye"></i> VER
                         </button>
-                        <!-- Botón Descarga: Descarga el PDF directamente -->
-                        <a href="{{ rec.certificado.url }}" target="_blank" class="btn-mini-cyber" title="Descargar" download>
+                        <!-- Botón Descarga: Convierte la IMAGEN a PDF al descargar -->
+                        <button class="btn-mini-cyber" onclick="descargarComoPdf('{{ rec.certificado.url }}')" title="Descargar como PDF">
                             <i class="bi bi-download"></i>
-                        </a>
+                        </button>
                     </div>
                     {% endif %}
                 </li>
@@ -274,7 +308,7 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR IFRAME) -->
+<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR DE IMAGEN) -->
 <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -328,35 +362,40 @@
         var visorContainer = document.getElementById('visorContainer');
         visorContainer.innerHTML = ''; // Limpiar contenido previo
 
-        // Limpieza de URL para detectar extensión
-        var cleanUrl = url.split(/[#?]/)[0];
-        var extension = cleanUrl.split('.').pop().trim().toLowerCase();
+        // ESTRATEGIA: SIEMPRE ES IMAGEN (PNG/JPG)
+        var img = document.createElement('img');
+        img.src = url;
+        img.className = "img-fluid";
+        img.style.maxHeight = "80vh";
+        img.style.border = "1px solid #333";
+        img.alt = "Vista previa del certificado";
+        
+        visorContainer.appendChild(img);
 
-        // 2. VISOR CON IFRAME (Funciona para PDF e Imagen)
-        // El navegador se encarga de renderizar el PDF o la imagen
-        var iframe = document.createElement('iframe');
-        iframe.src = url; 
-        iframe.style.width = "100%";
-        iframe.style.height = "75vh";
-        iframe.style.border = "none";
-        iframe.style.backgroundColor = "#fff";
+        // BOTÓN DENTRO DEL MODAL: Descarga como PDF
+        // TRUCO CLOUDINARY: Reemplazamos extension por .pdf y forzamos descarga
+        var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf?fl_attachment";
         
-        visorContainer.appendChild(iframe);
-        
-        // 3. Botón de Descarga
         var divBtn = document.createElement('div');
         divBtn.className = "p-3 w-100 mt-2";
-        // ?fl_attachment para forzar descarga si es necesario en algunos servidores, 
-        // aunque el atributo 'download' debería bastar en muchos casos.
-        var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
-        
-        divBtn.innerHTML = `<a href="${downloadUrl}" target="_blank" class="btn btn-cyber" download>
-                                <i class="bi bi-download me-2"></i>Descargar Original
+        divBtn.innerHTML = `<a href="${pdfUrl}" target="_blank" class="btn btn-cyber w-50">
+                                <i class="bi bi-file-pdf me-2"></i>Descargar como PDF
                             </a>`;
         visorContainer.appendChild(divBtn);
 
+        // Mostrar Modal
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
         myModal.show();
+    }
+
+    // NUEVA FUNCIÓN: Descarga directa convirtiendo a PDF (Botón pequeño)
+    function descargarComoPdf(url) {
+        if (url.startsWith('http://')) {
+            url = url.replace('http://', 'https://');
+        }
+        // TRUCO: Convertir IMG a PDF al vuelo
+        var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf?fl_attachment";
+        window.open(pdfUrl, '_blank');
     }
 
     // Función para generar el CV
@@ -377,4 +416,3 @@
     }
 </script>
 {% endblock %}
-```
