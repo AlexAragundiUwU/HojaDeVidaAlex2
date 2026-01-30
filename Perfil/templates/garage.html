@@ -160,9 +160,9 @@
     <!-- COLUMNA IZQUIERDA: LISTA DE PRODUCTOS -->
     <div class="col-lg-4 product-list-container">
         
-        <!-- BUCLE DJANGO: Lee desde la tabla VentaGarage -->
+        <!-- BUCLE DJANGO Corregido: Uso de imagen y valordelbien -->
         {% for item in datos %}
-        <div class="product-card" onclick="mostrarProducto('{% if item.documento_interes %}{{ item.documento_interes.url }}{% endif %}', '{{ item.nombreproducto }}', '${{ item.valordelbien }}', '{{ item.descripcion|escapejs }}', '{{ item.estadoproducto }}')">
+        <div class="product-card" onclick="mostrarProducto('{% if item.imagen %}{{ item.imagen.url }}{% endif %}', '{{ item.nombreproducto|escapejs }}', '${{ item.valordelbien }}', '{{ item.descripcionproducto|escapejs }}', '{{ item.estadoproducto|escapejs }}')">
             <div class="product-name">{{ item.nombreproducto }}</div>
             <div class="product-price-mini">${{ item.valordelbien }}</div>
         </div>
@@ -196,7 +196,7 @@
                     </div>
                 </div>
                 <!-- Enlace a WhatsApp usando el número del perfil -->
-                <a href="https://wa.me/593{{ perfil.telefonoconvencional|default:'986733959' }}?text=Hola,%20me%20interesa%20el%20articulo%20de%20la%20venta%20de%20garaje" target="_blank" class="btn-buy">
+                <a id="whatsappBtn" href="https://wa.me/593{{ perfil.telefonoconvencional|default:'986733959' }}?text=Hola,%20me%20interesa%20el%20articulo%3A%20" target="_blank" class="btn-buy">
                     <i class="bi bi-whatsapp me-2"></i>Me interesa
                 </a>
             </div>
@@ -211,11 +211,15 @@
         const img = document.getElementById('productImg');
         const empty = document.getElementById('emptyMsg');
         const box = document.getElementById('detailBox');
+        const waBtn = document.getElementById('whatsappBtn');
         
         document.getElementById('titleDisplay').innerText = titulo;
         document.getElementById('priceDisplay').innerText = precio;
         document.getElementById('descDisplay').innerText = descripcion;
         document.getElementById('statusDisplay').innerText = estado;
+
+        // Actualizar mensaje de WhatsApp con el nombre del producto
+        waBtn.href = "https://wa.me/593{{ perfil.telefonoconvencional|default:'986733959' }}?text=Hola,%20me%20interesa%20el%20articulo%20de%20garaje%3A%20" + encodeURIComponent(titulo);
 
         empty.style.display = 'none';
         

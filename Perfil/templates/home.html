@@ -7,12 +7,12 @@
 <style>
     :root { --neon-green: #00ff41; --dark-bg: #0a0a0a; --card-bg: #0d0d0d; }
     .hero-section { background: var(--dark-bg); padding: 3rem; border: 1px solid #1a1a1a; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
-    .profile-img { width: 150px; height: 150px; object-fit: cover; border: 2px solid var(--neon-green); padding: 3px; border-radius: 50%; display: block; margin-bottom: 1rem; filter: grayscale(100%); transition: 0.5s; }
+    .profile-img { width: 160px; height: 160px; object-fit: cover; border: 2px solid var(--neon-green); padding: 4px; border-radius: 50%; display: block; margin-bottom: 1rem; filter: grayscale(100%); transition: 0.5s; }
     .profile-img:hover { filter: grayscale(0%); box-shadow: 0 0 20px var(--neon-green); transform: scale(1.05); }
     
-    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-    .info-item { font-size: 0.85rem; color: #ccc; display: flex; align-items: center; gap: 8px; }
-    .info-item i { color: var(--neon-green); }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 20px; border-top: 1px solid #222; padding-top: 20px; }
+    .info-item { font-size: 0.85rem; color: #ccc; display: flex; align-items: center; gap: 10px; }
+    .info-item i { color: var(--neon-green); width: 16px; }
 
     .summary-card { background: var(--card-bg); border: 1px solid #222; border-radius: 4px; padding: 35px 20px 20px; height: 100%; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
     .summary-card:hover { border-color: var(--neon-green); transform: translateY(-5px); }
@@ -40,20 +40,26 @@
         </div>
         <div class="col-md-9">
             <h1 class="text-white mb-1">{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
-            <p class="text-success mb-3 fw-bold">{{ perfil.numerocedula }} | {{ perfil.nacionalidad }}</p>
+            <p class="text-success mb-2 fw-bold" style="letter-spacing: 1px;">
+                {{ perfil.numerocedula }} | {{ perfil.nacionalidad }} | {{ perfil.lugarnacimiento }}
+            </p>
             
             <div class="info-grid">
                 <div class="info-item"><i class="bi bi-envelope"></i> {{ perfil.email_contacto }}</div>
-                <div class="info-item"><i class="bi bi-telephone"></i> {{ perfil.telefonofijo|default:"N/A" }}</div>
-                <div class="info-item"><i class="bi bi-phone"></i> {{ perfil.telefonoconvencional|default:"N/A" }}</div>
+                <div class="info-item"><i class="bi bi-telephone"></i> Fijo: {{ perfil.telefonofijo|default:"N/A" }}</div>
+                <div class="info-item"><i class="bi bi-phone"></i> Conv.: {{ perfil.telefonoconvencional|default:"N/A" }}</div>
                 <div class="info-item"><i class="bi bi-geo-alt"></i> {{ perfil.direcciondomiciliaria }}</div>
-                <div class="info-item"><i class="bi bi-calendar-event"></i> {{ perfil.fechanacimiento }}</div>
-                <div class="info-item"><i class="bi bi-globe"></i> {{ perfil.sitioweb|default:"Sin sitio" }}</div>
+                <div class="info-item"><i class="bi bi-calendar3"></i> Nació: {{ perfil.fechanacimiento }}</div>
+                <div class="info-item"><i class="bi bi-person-badge"></i> {{ perfil.sexo }} | {{ perfil.estadocivil }}</div>
+                <div class="info-item"><i class="bi bi-globe"></i> {{ perfil.sitioweb|default:"Web no registrada" }}</div>
+                <div class="info-item"><i class="bi bi-card-checklist"></i> Licencia: {{ perfil.licenciaconducir|default:"No" }}</div>
             </div>
             
-            <div class="mt-4 d-flex gap-3">
+            <div class="mt-4">
                 {% if perfil.archivocv %}
-                <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#downloadModal">GENERAR CV</button>
+                <button class="btn btn-outline-success px-4 py-2" data-bs-toggle="modal" data-bs-target="#downloadModal">
+                    <i class="bi bi-file-earmark-pdf me-2"></i>GENERAR HOJA DE VIDA
+                </button>
                 {% endif %}
             </div>
         </div>
@@ -65,7 +71,7 @@
     {% if perfil.mostrar_experiencia %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_experiencia" class="btn-close-cyber" title="Ocultar sección">×</a>
+            <a href="?ocultar=mostrar_experiencia" class="btn-close-cyber" title="Ocultar">×</a>
             <div class="count-badge">{{ total_exp }} REGISTROS</div>
             <h5 class="section-title"><i class="bi bi-briefcase me-2"></i>Experiencia</h5>
             <ul class="item-list">
@@ -82,7 +88,7 @@
     {% if perfil.mostrar_cursos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_cursos" class="btn-close-cyber" title="Ocultar sección">×</a>
+            <a href="?ocultar=mostrar_cursos" class="btn-close-cyber">×</a>
             <div class="count-badge">{{ total_cursos }} CURSOS</div>
             <h5 class="section-title"><i class="bi bi-mortarboard me-2"></i>Cursos</h5>
             <ul class="item-list">
@@ -99,7 +105,7 @@
     {% if perfil.mostrar_logros %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_logros" class="btn-close-cyber" title="Ocultar sección">×</a>
+            <a href="?ocultar=mostrar_logros" class="btn-close-cyber">×</a>
             <div class="count-badge">{{ total_logros }} LOGROS</div>
             <h5 class="section-title"><i class="bi bi-trophy me-2"></i>Logros</h5>
             <ul class="item-list">
@@ -116,7 +122,7 @@
     {% if perfil.mostrar_academicos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_academicos" class="btn-close-cyber" title="Ocultar sección">×</a>
+            <a href="?ocultar=mostrar_academicos" class="btn-close-cyber">×</a>
             <div class="count-badge">{{ total_acad }} RECURSOS</div>
             <h5 class="section-title"><i class="bi bi-book me-2"></i>Académicos</h5>
             <ul class="item-list">
@@ -133,7 +139,7 @@
     {% if perfil.mostrar_proyectos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_proyectos" class="btn-close-cyber" title="Ocultar sección">×</a>
+            <a href="?ocultar=mostrar_proyectos" class="btn-close-cyber">×</a>
             <div class="count-badge">{{ total_proyectos }} PROYECTOS</div>
             <h5 class="section-title"><i class="bi bi-cpu me-2"></i>Proyectos</h5>
             <ul class="item-list">
@@ -146,11 +152,11 @@
     </div>
     {% endif %}
 
-    <!-- 6. GARAJE (SIN IMÁGENES AQUÍ) -->
+    <!-- 6. GARAJE -->
     {% if perfil.mostrar_garage %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_garage" class="btn-close-cyber" title="Ocultar sección">×</a>
+            <a href="?ocultar=mostrar_garage" class="btn-close-cyber">×</a>
             <div class="count-badge">{{ total_garage }} ITEMS</div>
             <h5 class="section-title"><i class="bi bi-shop me-2"></i>Garaje</h5>
             <div class="d-flex flex-wrap gap-2 mb-3">
@@ -158,18 +164,18 @@
                 <span class="badge border border-success text-success p-2">{{ item.nombreproducto }}</span>
                 {% endfor %}
             </div>
-            <a href="{% url 'garage' %}" class="btn-view-more mt-auto">IR A TIENDA</a>
+            <a href="{% url 'garage' %}" class="btn-view-more mt-auto">IR A TIENDA (VER FOTOS)</a>
         </div>
     </div>
     {% endif %}
 </div>
 
-<!-- MODAL GENERADOR DE CV -->
+<!-- MODAL GENERADOR DE CV (Filtros corregidos) -->
 <div class="modal fade" id="downloadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
             <div class="modal-header border-success">
-                <h5 class="modal-title text-success">CONFIGURAR EXPORTACIÓN CV</h5>
+                <h5 class="modal-title text-success">CONFIGURAR MI CV</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -182,11 +188,11 @@
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="cursos" value="true" checked>
-                        <label class="form-check-label text-white">Incluir Certificados de Cursos</label>
+                        <label class="form-check-label text-white">Incluir Cursos y Certificados</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="logros" value="true" checked>
-                        <label class="form-check-label text-white">Incluir Reconocimientos</label>
+                        <label class="form-check-label text-white">Incluir Logros y Reconocimientos</label>
                     </div>
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="academicos" value="true" checked>
@@ -201,7 +207,9 @@
                         <label class="form-check-label text-white">Incluir Venta de Garaje</label>
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold shadow">DESCARGAR CV COMPLETO</button>
+                    <p class="text-muted small mt-3">* El documento se generará en una pestaña nueva para su impresión/descarga.</p>
+
+                    <button type="submit" class="btn btn-success w-100 mt-2 py-2 fw-bold shadow">OBTENER MI CV PERSONALIZADO</button>
                 </form>
             </div>
         </div>
