@@ -197,11 +197,11 @@
                     <span class="text-truncate" style="max-width: 55%;">{{ curso.nombrecurso }}</span>
                     {% if curso.certificado %}
                     <div class="btn-action-group">
-                        <!-- Botón Visor -->
+                        <!-- Botón Visor: Transforma PDF a IMG -->
                         <button class="btn-mini-cyber" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver">
                             <i class="bi bi-eye"></i> VER
                         </button>
-                        <!-- Botón Descarga -->
+                        <!-- Botón Descarga: Descarga Original -->
                         <a href="{{ curso.certificado.url }}" target="_blank" class="btn-mini-cyber" title="Descargar" download>
                             <i class="bi bi-download"></i>
                         </a>
@@ -308,7 +308,7 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR NATIVO <IFRAME>) -->
+<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR SIEMPRE IMAGEN) -->
 <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -353,7 +353,7 @@
 
 <script>
     function verArchivo(url, titulo) {
-        // 1. Forzar HTTPS para evitar bloqueo de contenido mixto en Laptops
+        // 1. Forzar HTTPS
         if (url.startsWith('http://')) {
             url = url.replace('http://', 'https://');
         }
@@ -362,40 +362,48 @@
         var visorContainer = document.getElementById('visorContainer');
         visorContainer.innerHTML = ''; // Limpiar contenido previo
 
-        var extension = url.split(/[#?]/)[0].split('.').pop().trim().toLowerCase();
+        var cleanUrl = url.split(/[#?]/)[0];
+        var extension = cleanUrl.split('.').pop().trim().toLowerCase();
 
-        // 2. LÓGICA NATIVA DIRECTA (Lo que funcionó en el celular)
+        // 2. ESTRATEGIA: TRANSFORMAR PDF A JPG PARA VISTA PREVIA
+        var previewUrl = url;
+        
+        // Si es PDF, cambiamos la extensión a .jpg. 
+        // Cloudinary automáticamente generará una imagen de la página 1.
         if (extension === 'pdf') {
-            // Usamos IFRAME directo que es lo más compatible nativamente
-            var iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.style.width = "100%";
-            iframe.style.height = "75vh";
-            iframe.style.border = "none";
-            iframe.style.backgroundColor = "#fff";
-            
-            visorContainer.appendChild(iframe);
-        } else {
-            // Si es imagen, la mostramos normal
-            var img = document.createElement('img');
-            img.src = url;
-            img.className = "img-fluid";
-            img.style.maxHeight = "80vh";
-            visorContainer.appendChild(img);
+            previewUrl = cleanUrl.substring(0, cleanUrl.lastIndexOf('.')) + ".jpg";
         }
-        
-        // 3. Botón de descarga SIEMPRE presente abajo
-        var downloadContainer = document.createElement('div');
-        downloadContainer.className = "p-3 text-center";
-        var downloadUrl = url.includes('?') ? url + '&fl_attachment' : url + '?fl_attachment';
-        
-        downloadContainer.innerHTML = `
-            <a href="${downloadUrl}" class="btn btn-cyber" download target="_blank">
-                <i class="bi bi-download me-2"></i> Descargar Archivo Original
-            </a>
-        `;
-        visorContainer.appendChild(downloadContainer);
 
+        // Mostramos SIEMPRE una imagen (<img>).
+        // Esto garantiza que NO habrá pantalla negra, ni bloqueo de iframe, ni descarga automática.
+        var img = document.createElement('img');
+        img.src = previewUrl;
+        img.className = "img-fluid";
+        img.style.maxHeight = "80vh";
+        img.style.border = "1px solid #333";
+        img.alt = "Vista previa del documento";
+        
+        // Si falla la conversión (raro), mostramos un icono
+        img.onerror = function() {
+            this.style.display = 'none';
+            visorContainer.innerHTML += '<div class="text-white p-5"><i class="bi bi-file-pdf display-1 text-danger"></i><p class="mt-3">Vista previa no disponible.</p></div>';
+        };
+
+        visorContainer.appendChild(img);
+
+        // 3. BOTÓN DE DESCARGA (Siempre al archivo ORIGINAL)
+        var divBtn = document.createElement('div');
+        divBtn.className = "p-3 w-100 mt-2";
+        
+        // ?fl_attachment fuerza la descarga en Cloudinary
+        var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
+        
+        divBtn.innerHTML = `<a href="${downloadUrl}" target="_blank" class="btn btn-cyber">
+                                <i class="bi bi-download me-2"></i>Descargar Original
+                            </a>`;
+        visorContainer.appendChild(divBtn);
+
+        // Mostrar Modal
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
         myModal.show();
     }
@@ -420,12 +428,12 @@
 {% endblock %}
 ```
 
-### Comandos de actualización
+### Comandos para actualizar:
 
 ```bash
 git add .
-git commit -m "Fix final: Visor directo para Cursos y Logros"
+git commit -m "Fix final: Vista previa como imagen JPG y descarga como PDF original"
 git push origin main
 ```
 
-Ejecuta esto y debería quedar tal cual lo necesitas: **Botón solo en Cursos y Logros, y visor directo.**
+Con esto, cuando hagas clic en **VER**, verás una foto de tu certificado (instantánea). Y cuando hagas clic en **Descargar** (el botón de abajo o el de la lista), bajarás el PDF original. ¡Es la solución definitiva!
