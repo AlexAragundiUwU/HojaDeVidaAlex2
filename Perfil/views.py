@@ -58,11 +58,13 @@ def home(request):
             activarparaqueseveaenfront=True
         ).order_by('-fechareconocimiento')[:3] if perfil else [],
 
-        # Agregado ordenamiento por ID descendente (lo último creado primero) para académicos
+        # CORRECCIÓN AQUÍ: Usamos 'pk' que es el alias universal para la clave primaria, 
+        # o el nombre específico del campo si 'pk' fallara (pero pk es seguro en Django).
+        # Para ProductosAcademicos, el error sugería 'idproductoacademico'.
         'resumen_acad': ProductosAcademicos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
-        ).order_by('-idproductoacademico')[:3] if perfil else [],
+        ).order_by('-pk')[:3] if perfil else [],
 
         'resumen_lab': ProductosLaborales.objects.filter(
             idperfilconqueestaactivo=perfil, 
@@ -83,7 +85,6 @@ def vista_previa_cv(request):
     context = {'perfil': perfil}
     
     # Lógica de filtros: recibe los parámetros del JavaScript del modal de home.html
-    # APLICADO ORDENAMIENTO TAMBIÉN AQUÍ PARA QUE EL PDF SALGA ORDENADO
     if request.GET.get('cv') == 'true': 
         context['incluir_perfil'] = True
         
@@ -118,14 +119,15 @@ def vista_previa_cv(request):
         )
     
     if request.GET.get('academicos') == 'true': 
+        # CORRECCIÓN AQUÍ TAMBIÉN
         context['academicos'] = ProductosAcademicos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
-        ).order_by('-idproductoacademico')
+        ).order_by('-pk')
 
     return render(request, 'cv_print.html', context)
 
-# Vistas de las páginas individuales CON ORDENAMIENTO APLICADO
+# Vistas de las páginas individuales (CON ORDENAMIENTO)
 def experiencia(request):
     perfil = get_active_profile()
     datos = ExperienciaLaboral.objects.filter(
@@ -136,10 +138,11 @@ def experiencia(request):
 
 def productos_academicos(request):
     perfil = get_active_profile()
+    # CORRECCIÓN AQUÍ TAMBIÉN
     datos = ProductosAcademicos.objects.filter(
         idperfilconqueestaactivo=perfil, 
         activarparaqueseveaenfront=True
-    ).order_by('-idproductoacademico') if perfil else []
+    ).order_by('-pk') if perfil else []
     return render(request, 'productos_academicos.html', {'datos': datos, 'perfil': perfil})
 
 def productos_laborales(request):
