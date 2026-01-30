@@ -187,10 +187,10 @@
                         <button class="btn-icon-list" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver Certificado">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <!-- Botón Descarga -->
-                        <a href="{{ curso.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar">
+                        <!-- Botón Descarga INTELIGENTE -->
+                        <button class="btn-icon-list" onclick="descargarComoPdf('{{ curso.certificado.url }}')" title="Descargar como PDF">
                             <i class="bi bi-download"></i>
-                        </a>
+                        </button>
                     </div>
                     {% endif %}
                 </li>
@@ -215,12 +215,14 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ rec.descripcionreconocimiento }}</span>
                     {% if rec.certificado %}
                     <div>
+                        <!-- Botón Visor -->
                         <button class="btn-icon-list" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver Reconocimiento">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <a href="{{ rec.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar">
+                        <!-- Botón Descarga INTELIGENTE -->
+                        <button class="btn-icon-list" onclick="descargarComoPdf('{{ rec.certificado.url }}')" title="Descargar como PDF">
                             <i class="bi bi-download"></i>
-                        </a>
+                        </button>
                     </div>
                     {% endif %}
                 </li>
@@ -354,7 +356,6 @@
         var extension = url.split('.').pop().toLowerCase();
         
         // --- ESTRATEGIA PARA IMÁGENES (PNG, JPG) ---
-        // Si subiste PNG/JPG, se ve directo
         if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
             var img = document.createElement('img');
             img.src = url;
@@ -364,18 +365,14 @@
             img.style.marginBottom = "auto";
             visorContainer.appendChild(img);
 
-            // TRUCO DE CLOUDINARY: BOTÓN PARA DESCARGAR COMO PDF
-            // Cambiamos la extensión al final de la URL para que Cloudinary lo convierta
+            // BOTÓN DENTRO DEL MODAL PARA DESCARGAR COMO PDF
             var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf";
-            
             var divBtn = document.createElement('div');
             divBtn.className = "p-3 w-100";
             divBtn.innerHTML = `<a href="${pdfUrl}" target="_blank" class="btn btn-cyber w-50" download><i class="bi bi-file-pdf me-2"></i>Descargar como PDF</a>`;
             visorContainer.appendChild(divBtn);
         } 
-        
         // --- ESTRATEGIA PARA PDFS ---
-        // Si subiste PDF, usamos Google Docs Viewer
         else if (extension === 'pdf') {
             var googleViewerUrl = "https://docs.google.com/gview?url=" + encodeURIComponent(url) + "&embedded=true";
             var iframe = document.createElement('iframe');
@@ -393,15 +390,31 @@
             visorContainer.appendChild(iframe);
             visorContainer.appendChild(divBtn);
         }
-        
-        // --- CUALQUIER OTRO ARCHIVO ---
         else {
              visorContainer.innerHTML = `<div class="p-5 text-white">No hay vista previa disponible.<br><br><a href="${url}" class="btn btn-cyber">Descargar Archivo</a></div>`;
         }
 
-        // Mostrar Modal
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
         myModal.show();
+    }
+
+    // NUEVA FUNCIÓN: DESCARGAR CUALQUIER COSA COMO PDF
+    function descargarComoPdf(url) {
+        if (url.startsWith('http://')) {
+            url = url.replace('http://', 'https://');
+        }
+        
+        var extension = url.split('.').pop().toLowerCase();
+        var imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        
+        // Si es imagen, le pedimos a Cloudinary que nos de el PDF
+        if (imageExtensions.includes(extension)) {
+            var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf";
+            window.open(pdfUrl, '_blank');
+        } else {
+            // Si ya es PDF u otro, lo bajamos normal
+            window.open(url, '_blank');
+        }
     }
 
     // Función para generar el CV
