@@ -183,14 +183,14 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ curso.nombrecurso }}</span>
                     {% if curso.certificado %}
                     <div>
-                        <!-- Botón Visor -->
+                        <!-- Botón Visor con nuevo script -->
                         <button class="btn-icon-list" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver Certificado">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <!-- Botón Descarga -->
-                        <button class="btn-icon-list" onclick="descargarOriginal('{{ curso.certificado.url }}')" title="Descargar PDF Original">
+                        <!-- Botón Descarga Directa -->
+                        <a href="{{ curso.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar" download>
                             <i class="bi bi-download"></i>
-                        </button>
+                        </a>
                     </div>
                     {% endif %}
                 </li>
@@ -215,14 +215,12 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ rec.descripcionreconocimiento }}</span>
                     {% if rec.certificado %}
                     <div>
-                        <!-- Botón Visor -->
                         <button class="btn-icon-list" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver Reconocimiento">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <!-- Botón Descarga -->
-                        <button class="btn-icon-list" onclick="descargarOriginal('{{ rec.certificado.url }}')" title="Descargar PDF Original">
+                        <a href="{{ rec.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar" download>
                             <i class="bi bi-download"></i>
-                        </button>
+                        </a>
                     </div>
                     {% endif %}
                 </li>
@@ -299,7 +297,7 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR NATIVO MEJORADO) -->
+<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR NATIVO <OBJECT>) -->
 <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -344,7 +342,7 @@
 
 <script>
     function verArchivo(url, titulo) {
-        // 1. Forzar HTTPS para seguridad (Cloudinary a veces da http)
+        // 1. Forzar HTTPS
         if (url.startsWith('http://')) {
             url = url.replace('http://', 'https://');
         }
@@ -353,62 +351,53 @@
         var visorContainer = document.getElementById('visorContainer');
         visorContainer.innerHTML = ''; // Limpiar contenido previo
 
-        // LIMPIAR URL: Detectar extensión ignorando parámetros (?v=123)
+        // Limpieza agresiva de URL para detectar extensión
         var cleanUrl = url.split(/[#?]/)[0];
         var extension = cleanUrl.split('.').pop().trim().toLowerCase();
 
-        // --- ESTRATEGIA PARA PDFS (EMBED NATIVO) ---
-        // Usamos <embed> que es lo más compatible y directo
+        // 2. LÓGICA NATIVA (SIN TRUCOS)
         if (extension === 'pdf') {
-            var embedTag = document.createElement('embed');
-            embedTag.src = url;
-            embedTag.type = "application/pdf";
-            embedTag.style.width = "100%";
-            embedTag.style.height = "80vh";
+            // Usamos la etiqueta <object> estándar de HTML5
+            var objectEl = document.createElement('object');
+            objectEl.data = url;
+            objectEl.type = "application/pdf";
+            objectEl.width = "100%";
+            objectEl.height = "100%";
+            objectEl.style.minHeight = "75vh";
             
-            // Si el embed falla en móvil, mostramos botón
-            var fallback = document.createElement('div');
-            fallback.className = "text-white p-3";
-            fallback.innerHTML = `<p>Si no puedes ver el documento, descárgalo aquí:</p>`;
+            // Contenido de respaldo (Fallback) si el navegador no soporta PDF
+            objectEl.innerHTML = `
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-white">
+                    <p>Tu navegador no puede visualizar este PDF aquí.</p>
+                    <a href="${url}" target="_blank" class="btn btn-cyber">Abrir PDF en nueva pestaña</a>
+                </div>
+            `;
             
-            visorContainer.appendChild(embedTag);
-            visorContainer.appendChild(fallback);
-            
-            // Botón de respaldo
-            var divBtn = document.createElement('div');
-            divBtn.className = "p-3 w-100";
-            var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
-            divBtn.innerHTML = `<a href="${downloadUrl}" target="_blank" class="btn btn-cyber"><i class="bi bi-download me-2"></i>Descargar Original</a>`;
-            visorContainer.appendChild(divBtn);
-        } 
-        
-        // --- ESTRATEGIA IMAGEN (PNG, JPG) ---
-        else {
+            visorContainer.appendChild(objectEl);
+        } else {
+            // Si es imagen, la mostramos normal
             var img = document.createElement('img');
             img.src = url;
             img.className = "img-fluid";
             img.style.maxHeight = "80vh";
-            
-            var divBtn = document.createElement('div');
-            divBtn.className = "p-3 w-100";
-            var downloadUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
-            divBtn.innerHTML = `<a href="${downloadUrl}" class="btn btn-cyber"><i class="bi bi-download me-2"></i>Descargar Imagen</a>`;
-            
             visorContainer.appendChild(img);
-            visorContainer.appendChild(divBtn);
         }
+        
+        // 3. Botón de descarga SIEMPRE presente y claro abajo
+        var downloadContainer = document.createElement('div');
+        downloadContainer.className = "p-3 text-center";
+        // Cloudinary: fl_attachment fuerza la descarga
+        var downloadUrl = url.includes('?') ? url + '&fl_attachment' : url + '?fl_attachment';
+        
+        downloadContainer.innerHTML = `
+            <a href="${downloadUrl}" class="btn btn-cyber" download target="_blank">
+                <i class="bi bi-download me-2"></i> Descargar Archivo Original
+            </a>
+        `;
+        visorContainer.appendChild(downloadContainer);
 
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
         myModal.show();
-    }
-
-    // Función de descarga directa para los botones pequeños
-    function descargarOriginal(url) {
-        if (url.startsWith('http://')) {
-            url = url.replace('http://', 'https://');
-        }
-        var safeUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
-        window.open(safeUrl, '_blank');
     }
 
     // Función para generar el CV
@@ -429,3 +418,14 @@
     }
 </script>
 {% endblock %}
+```
+
+### Comandos para actualizar:
+
+```bash
+git add .
+git commit -m "Fix final: Visor de PDF nativo con etiqueta Object"
+git push origin main
+```
+
+**Nota:** Esta solución confía en el navegador del usuario. Si estás en un celular, a veces el PDF no se incrusta, pero para eso dejé el botón de "Abrir en nueva pestaña" dentro del visor y el botón de descarga abajo. ¡Es lo más seguro!
