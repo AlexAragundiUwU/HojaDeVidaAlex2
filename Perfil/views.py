@@ -1,18 +1,41 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.conf import settings
+import os
+
+# Importación de los modelos necesarios para el portafolio
 from .models import (
-    DatosPersonales, ExperienciaLaboral, 
-    CursosRealizados, VentaGarage,
-    Reconocimientos, ProductosAcademicos, ProductosLaborales
+    DatosPersonales, ExperienciaLaboral, CursosRealizados, 
+    Reconocimientos, ProductosAcademicos, ProductosLaborales, VentaGarage
 )
 
-# Función auxiliar para obtener el perfil que tiene el check de 'activo'
+def link_callback(uri, rel):
+    """
+    Función para xhtml2pdf que convierte las URLs de archivos (media/static) 
+    en rutas locales absolutas para que el generador de PDF encuentre las imágenes.
+    """
+    if uri.startswith(settings.MEDIA_URL):
+        path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
+    elif uri.startswith(settings.STATIC_URL):
+        path = os.path.join(settings.STATIC_ROOT, uri.replace(settings.STATIC_URL, ""))
+    else:
+        return uri
+
+    if not os.path.isfile(path):
+        return uri
+    return path
+
 def get_active_profile():
+    """Recupera el perfil que tiene el campo perfilactivo marcado como 1."""
     try:
         return DatosPersonales.objects.filter(perfilactivo=1).first()
     except:
         return None
 
 def home(request):
+    """Vista principal que gestiona el resumen de las 6 secciones y el ocultado de tarjetas."""
     perfil = get_active_profile()
     
     # Lógica para ocultar secciones permanentemente desde la "X" de las tarjetas
@@ -37,7 +60,7 @@ def home(request):
 
     context = {
         'perfil': perfil,
-        # Resúmenes limitados a 3 registros y ORDENADOS CRONOLÓGICAMENTE
+        # Resúmenes limitados a 3 registros y ordenados cronológicamente
         'resumen_exp': ExperienciaLaboral.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
@@ -48,19 +71,11 @@ def home(request):
             activarparaqueseveaenfront=True
         ).order_by('-fechafin')[:3] if perfil else [],
 
-        'resumen_garage': VentaGarage.objects.filter(
-            idperfilconqueestaactivo=perfil, 
-            activarparaqueseveaenfront=True
-        )[:5] if perfil else [],
-
         'resumen_rec': Reconocimientos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
         ).order_by('-fechareconocimiento')[:3] if perfil else [],
 
-        # CORRECCIÓN AQUÍ: Usamos 'pk' que es el alias universal para la clave primaria, 
-        # o el nombre específico del campo si 'pk' fallara (pero pk es seguro en Django).
-        # Para ProductosAcademicos, el error sugería 'idproductoacademico'.
         'resumen_acad': ProductosAcademicos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
@@ -71,6 +86,11 @@ def home(request):
             activarparaqueseveaenfront=True
         ).order_by('-fechaproducto')[:3] if perfil else [],
         
+        'resumen_garage': VentaGarage.objects.filter(
+            idperfilconqueestaactivo=perfil, 
+            activarparaqueseveaenfront=True
+        )[:5] if perfil else [],
+        
         # Totales para el modal y las burbujas
         'total_exp': c_exp, 'total_cursos': c_cur, 'total_logros': c_log,
         'total_acad': c_aca, 'total_proyectos': c_pro, 'total_garage': c_gar,
@@ -78,18 +98,16 @@ def home(request):
     return render(request, 'home.html', context)
 
 def vista_previa_cv(request):
+    """Genera el PDF dinámico basándose en los filtros seleccionados en el modal del Home."""
     perfil = get_active_profile()
-    if not perfil: 
+    if not perfil:
         return redirect('home')
 
     context = {'perfil': perfil}
-    
-    # Lógica de filtros: recibe los parámetros del JavaScript del modal de home.html
-    if request.GET.get('cv') == 'true': 
-        context['incluir_perfil'] = True
-        
+
+    # Lógica de filtros: recibe los parámetros del modal de home.html
     if request.GET.get('experiencia') == 'true': 
-        context['experiencia'] = ExperienciaLaboral.objects.filter(
+        context['experiencias'] = ExperienciaLaboral.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
         ).order_by('-fechainiciogestion')
@@ -119,15 +137,27 @@ def vista_previa_cv(request):
         )
     
     if request.GET.get('academicos') == 'true': 
-        # CORRECCIÓN AQUÍ TAMBIÉN
         context['academicos'] = ProductosAcademicos.objects.filter(
             idperfilconqueestaactivo=perfil, 
             activarparaqueseveaenfront=True
         ).order_by('-pk')
 
-    return render(request, 'cv_print.html', context)
+    # Carga de la plantilla diseñada para el PDF
+    template = get_template('cv_print.html')
+    html = template.render(context)
+    
+    response = HttpResponse(content_type='application/pdf')
+    # Disposición 'inline' permite visualizar el PDF antes de guardarlo
+    response['Content-Disposition'] = f'inline; filename="CV_{perfil.nombres}_{perfil.apellidos}.pdf"'
 
-# Vistas de las páginas individuales (CON ORDENAMIENTO)
+    # Generación final del PDF con soporte para imágenes locales
+    pisa_status = pisa.CreatePDF(html, dest=response, link_callback=link_callback)
+    
+    if pisa_status.err:
+        return HttpResponse('Ocurrió un error al procesar el archivo PDF.')
+    return response
+
+# Vistas de detalle para cada sección individual con ordenamiento
 def experiencia(request):
     perfil = get_active_profile()
     datos = ExperienciaLaboral.objects.filter(
@@ -138,7 +168,6 @@ def experiencia(request):
 
 def productos_academicos(request):
     perfil = get_active_profile()
-    # CORRECCIÓN AQUÍ TAMBIÉN
     datos = ProductosAcademicos.objects.filter(
         idperfilconqueestaactivo=perfil, 
         activarparaqueseveaenfront=True

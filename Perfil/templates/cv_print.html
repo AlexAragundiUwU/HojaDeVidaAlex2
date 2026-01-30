@@ -1,375 +1,202 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portafolio Profesional - {{ perfil.nombres }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- LIBRERÍAS DE RENDERIZADO -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
-
     <style>
-        /* CONFIGURACIÓN DE FLUJO CONTINUO - CERO HUECOS Y CERO CORTES */
-        @page { size: A4; margin: 0; }
+        /* Reglas obligatorias para xhtml2pdf */
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 1.5cm;
+                margin-right: 1.5cm;
+                height: 1cm;
+            }
+        }
         
-        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
-
-        html, body { 
-            height: auto; 
-            margin: 0; 
-            padding: 0; 
-            background: #f4f4f4; 
-            font-size: 11pt; 
-            color: #000; 
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #333;
+            font-size: 10pt;
             line-height: 1.4;
-            /* Evita cortes de palabras y asegura flujo limpio */
-            word-break: normal;
-            overflow-wrap: break-word;
-            text-rendering: optimizeLegibility;
-            hyphens: none;
-        }
-        
-        #content-to-print {
-            background: white;
-            width: 210mm;
-            margin: 0 auto;
-            padding: 8mm 15mm; /* Padding mínimo arriba para llenar la Hoja 1 */
-            min-height: 297mm;
-            position: relative;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* Encabezado Compacto y Elevado */
-        .header-main {
-            text-align: center;
-            border-bottom: 2px solid #198754;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-        }
-
-        h1 { color: #000; font-weight: 800; margin: 0 0 2px 0; text-transform: uppercase; font-size: 22pt; letter-spacing: -0.5px; }
-        .contact-info { font-size: 9.5pt; color: #333; margin-bottom: 0; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; font-weight: 500; }
-        
-        h2 { 
-            color: #198754; 
-            font-weight: 700; 
-            margin-top: 18px; 
-            border-bottom: 1px solid #ddd; 
-            padding-bottom: 2px; 
-            font-size: 14pt; 
-            text-transform: uppercase; 
-            page-break-after: avoid; 
-        }
-        
-        .section-item { 
-            margin-bottom: 12px; 
-            padding-bottom: 2px;
-            page-break-inside: auto; /* IMPORTANTE: Permite que el contenido fluya y no deje huecos */
-        }
-        
-        .item-header { 
-            margin-bottom: 3px;
-            page-break-inside: avoid; /* Mantiene el título unido a su inicio */
-        }
-        
-        .item-title { font-weight: 700; font-size: 12.5pt; color: #000; margin: 0; line-height: 1.2; }
-        .item-subtitle { color: #222; font-weight: 600; font-size: 11pt; margin: 1px 0; }
-        .item-date { color: #555; font-size: 9.5pt; font-style: italic; }
-        .item-desc { 
-            font-size: 10.5pt; 
-            text-align: justify; 
-            margin-top: 4px; 
-            line-height: 1.4;
-            white-space: normal;
-        }
-        
-        /* Evidencias - Ajuste de Cascada Real */
-        .evidence-box {
-            width: 100%;
-            margin-top: 8px;
-            border: 1px solid #eee;
-            text-align: center;
-            background: #fff;
-            padding: 4px;
-            border-radius: 4px;
-            display: block;
-            page-break-inside: avoid; /* La imagen se mantiene entera, pero el bloque puede saltar */
-        }
-
-        canvas { display: none; } 
-        img.img-evidence { 
+        /* Diseño de Cabecera */
+        .header-table { 
             width: 100%; 
-            height: auto; 
-            max-height: 600px; /* Tamaño optimizado para visibilidad sin romper la cascada */
-            object-fit: contain; 
-            display: block; 
-            margin: 0 auto;
+            border-bottom: 2px solid #00ff41; 
+            padding-bottom: 15px; 
+            margin-bottom: 20px; 
         }
+        .profile-img { 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+        }
+        .info-col { width: 75%; }
+        .img-col { width: 25%; text-align: right; }
+        
+        h1 { margin: 0; color: #000; font-size: 22pt; text-transform: uppercase; }
+        .contact-info { font-size: 9pt; color: #555; margin-top: 5px; }
 
-        .academic-block {
-            border-left: 4px solid #198754;
-            padding-left: 12px;
+        /* Estilos de Títulos de Sección */
+        h2 {
+            background-color: #f4f4f4;
+            border-left: 5px solid #00ff41;
+            padding: 5px 10px;
+            font-size: 12pt;
+            text-transform: uppercase;
+            margin-top: 20px;
             margin-bottom: 10px;
         }
 
-        /* Panel de Control Flotante */
-        .print-controls { 
-            position: fixed; top: 20px; right: 20px; z-index: 9999; 
-            background: #fff; padding: 15px; border-radius: 12px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; width: 220px;
-            border: 2px solid #198754;
+        .section { margin-bottom: 15px; }
+        .item-title { font-weight: bold; font-size: 11pt; color: #000; }
+        .item-meta { color: #666; font-size: 9pt; font-style: italic; margin-bottom: 4px; }
+        
+        /* Contenedores de Certificados */
+        .cert-container { 
+            margin-top: 8px; 
+            text-align: center; 
+        }
+        .cert-img { 
+            width: 320px; 
+            border: 1px solid #ddd; 
+            padding: 5px; 
         }
 
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; color: #198754;
+        /* Diseño del Catálogo de Garaje */
+        .garage-table { 
+            width: 100%; 
+            margin-top: 10px; 
+        }
+        .garage-item { 
+            padding: 10px; 
+            text-align: center; 
+            border: 1px solid #eee; 
+            width: 33.3%; 
+            vertical-align: top; 
+        }
+        .garage-img { 
+            width: 120px; 
+            height: 90px; 
+        }
+        .price { 
+            color: #28a745; 
+            font-weight: bold; 
+            font-size: 11pt; 
         }
 
-        @media print {
-            .print-controls, #loading-overlay { display: none !important; }
-            body { background: white; }
-            #content-to-print { box-shadow: none; margin: 0; width: 100%; padding: 5mm 10mm; }
+        .footer { 
+            text-align: center; 
+            font-size: 8pt; 
+            color: #aaa; 
         }
     </style>
 </head>
 <body>
 
-    <div id="loading-overlay">
-        <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h4 class="fw-bold">OPTIMIZANDO PORTAFOLIO...</h4>
-        <p>Ajustando textos y organizando cascada para eliminar huecos.</p>
-    </div>
-
-    <div class="print-controls" data-html2canvas-ignore="true">
-        <h6 class="fw-bold mb-3 text-success">Panel de Portafolio</h6>
-        <button id="download-btn" onclick="descargarPDFFinal()" class="btn btn-success w-100 fw-bold shadow mb-2 py-2" disabled>
-            <i class="fa-solid fa-sync fa-spin me-2"></i> CARGANDO...
-        </button>
-        <button onclick="window.close()" class="btn btn-outline-secondary btn-sm w-100">
-            Cerrar Vista
-        </button>
-    </div>
-
-    <div id="content-to-print">
-        
-        <!-- ENCABEZADO -->
-        <div class="header-main">
-            <h1>{{ perfil.apellidos }} {{ perfil.nombres }}</h1>
-            <div class="contact-info">
-                <span><i class="fa-solid fa-envelope me-1"></i> {{ perfil.email_contacto }}</span>
-                {% if perfil.telefonomovil %}<span><i class="fa-solid fa-phone me-1"></i> {{ perfil.telefonomovil }}</span>{% endif %}
-                <span><i class="fa-solid fa-location-dot me-1"></i> {{ perfil.direcciondomiciliaria }}</span>
-            </div>
-        </div>
-
-        <!-- 1. HOJA DE VIDA ORIGINAL -->
-        {% if incluir_perfil and perfil.archivocv %}
-        <div class="section-item">
-            <h2 style="margin-top: 0;">Hoja de Vida Principal</h2>
-            <div class="evidence-box">
-                <canvas id="canvas_cv_main" data-url="{{ perfil.archivocv.url }}"></canvas>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- 2. EXPERIENCIA LABORAL -->
-        {% if experiencia %}
-        <h2>Experiencia Laboral</h2>
-        {% for exp in experiencia %}
-        <div class="section-item">
-            <div class="item-header">
-                <div class="d-flex justify-content-between align-items-baseline">
-                    <div class="item-title">{{ exp.cargodesempenado }}</div>
-                    <div class="item-date">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Presente{% endif %}</div>
+    <!-- CABECERA -->
+    <table class="header-table">
+        <tr>
+            <td class="info-col">
+                <h1>{{ perfil.nombres }} {{ perfil.apellidos }}</h1>
+                <div class="contact-info">
+                    <strong>ID:</strong> {{ perfil.numerocedula }} | <strong>País:</strong> {{ perfil.nacionalidad }}<br>
+                    <strong>Email:</strong> {{ perfil.email_contacto }} | <strong>Tel:</strong> {{ perfil.telefonoconvencional }}<br>
+                    <strong>Dirección:</strong> {{ perfil.direcciondomiciliaria }}
                 </div>
-                <div class="item-subtitle">{{ exp.nombrempresa }}</div>
-            </div>
-            <div class="item-desc">{{ exp.descripcionfunciones|linebreaksbr }}</div>
-            {% if exp.rutacertificado %}
-                <div class="evidence-box">
-                    {% if exp.rutacertificado.url|lower|slice:"-4:" == ".pdf" %}
-                        <canvas id="canvas_exp_{{ forloop.counter }}" data-url="{{ exp.rutacertificado.url }}"></canvas>
-                    {% else %}
-                        <img src="{{ exp.rutacertificado.url }}" class="img-evidence" crossorigin="anonymous" alt="Certificado Laboral">
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        <!-- 3. CERTIFICACIONES Y CURSOS -->
-        {% if cursos %}
-        <h2>Cursos y Certificaciones</h2>
-        {% for curso in cursos %}
-        <div class="section-item">
-            <div class="item-header">
-                <div class="d-flex justify-content-between align-items-baseline">
-                    <div class="item-title">{{ curso.nombrecurso }}</div>
-                    <div class="item-date">{{ curso.fechafin|date:"Y" }}</div>
-                </div>
-                <div class="item-subtitle text-muted">{{ curso.entidadpatrocinadora }} | {{ curso.totalhoras }} Horas</div>
-            </div>
-            {% if curso.rutacertificado %}
-                <div class="evidence-box">
-                    {% if curso.rutacertificado.url|lower|slice:"-4:" == ".pdf" %}
-                        <canvas id="canvas_curso_{{ forloop.counter }}" data-url="{{ curso.rutacertificado.url }}"></canvas>
-                    {% else %}
-                        <img src="{{ curso.rutacertificado.url }}" class="img-evidence" crossorigin="anonymous" alt="Certificado Curso">
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        <!-- 4. HISTORIAL ACADÉMICO -->
-        {% if academicos %}
-        <h2>Formación Académica</h2>
-        {% for acad in academicos %}
-        <div class="section-item academic-block">
-            <div class="item-title">{{ acad.nombrerecurso }}</div>
-            <div class="item-subtitle text-success fw-bold">{{ acad.clasificador }}</div>
-            <p class="item-desc">{{ acad.descripcion }}</p>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        <!-- 5. LOGROS -->
-        {% if logros %}
-        <h2>Logros y Reconocimientos</h2>
-        {% for log in logros %}
-        <div class="section-item">
-            <div class="item-header">
-                <div class="item-title">{{ log.descripcionreconocimiento }}</div>
-                <p class="item-subtitle mb-0 text-muted">{{ log.entidadpatrocinadora }} • {{ log.fechareconocimiento|date:"Y" }}</p>
-            </div>
-            {% if log.rutacertificado %}
-                <div class="evidence-box">
-                    {% if log.rutacertificado.url|lower|slice:"-4:" == ".pdf" %}
-                        <canvas id="canvas_logro_{{ forloop.counter }}" data-url="{{ log.rutacertificado.url }}"></canvas>
-                    {% else %}
-                        <img src="{{ log.rutacertificado.url }}" class="img-evidence" crossorigin="anonymous" alt="Reconocimiento">
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-        
-        <!-- 6. PROYECTOS -->
-        {% if proyectos %}
-        <h2>Portafolio de Proyectos</h2>
-        {% for proy in proyectos %}
-            <div class="section-item">
-                <div class="item-title">{{ proy.nombreproducto }} <span class="ms-2 text-muted" style="font-size: 0.9em;">({{ proy.fechaproducto|date:"Y" }})</span></div>
-                <p class="item-desc">{{ proy.descripcion }}</p>
-                {% if proy.imagen %}
-                    <div class="evidence-box">
-                        <img src="{{ proy.imagen.url }}" class="img-evidence" crossorigin="anonymous" alt="Imagen del Proyecto">
-                    </div>
+            </td>
+            <td class="img-col">
+                {% if perfil.fotoperfil %}
+                    <img src="{{ perfil.fotoperfil.url }}" class="profile-img">
                 {% endif %}
-            </div>
-        {% endfor %}
-        {% endif %}
+            </td>
+        </tr>
+    </table>
 
-        <!-- 7. GARAJE -->
-        {% if garage %}
-        <h2>Artículos en Venta</h2>
-        <div class="row gx-3 gy-3">
-        {% for item in garage %}
-            <div class="col-6 section-item">
-                <div class="border p-3 text-center h-100 bg-light rounded shadow-sm">
-                    <strong class="d-block mb-1" style="font-size: 11pt;">{{ item.nombreproducto }}</strong>
-                    <span class="text-success fw-bold d-block mb-1" style="font-size: 12pt;">${{ item.valordelbien }}</span>
-                    {% if item.documento_interes %}
-                         {% if not item.documento_interes.url|lower|slice:"-4:" == ".pdf" %}
-                            <img src="{{ item.documento_interes.url }}" class="img-fluid mt-2 rounded border" style="max-height: 150px;" crossorigin="anonymous" alt="Producto">
-                        {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
+    <!-- EXPERIENCIA -->
+    {% if experiencias %}
+    <h2>Experiencia Profesional</h2>
+    {% for exp in experiencias %}
+    <div class="section">
+        <div class="item-title">{{ exp.cargodesempenado }}</div>
+        <div class="item-meta">{{ exp.nombrempresa }} | {{ exp.fechainiciogestion|date:"M Y" }} - {{ exp.fechafingestion|date:"M Y" }}</div>
+        <div style="text-align: justify;">{{ exp.descripcionfunciones|linebreaksbr }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- CURSOS CON CERTIFICADOS -->
+    {% if cursos %}
+    <h2>Formación y Certificados</h2>
+    {% for curso in cursos %}
+    <div class="section" style="page-break-inside: avoid;">
+        <div class="item-title">{{ curso.nombrecurso }}</div>
+        <div class="item-meta">{{ curso.entidadpatrocinadora }} | Finalizado: {{ curso.fechafin|date:"d/m/Y" }}</div>
+        {% if curso.imagen_preview %}
+        <div class="cert-container">
+            <img src="{{ curso.imagen_preview.url }}" class="cert-img">
         </div>
         {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
 
+    <!-- RECONOCIMIENTOS -->
+    {% if logros %}
+    <h2>Reconocimientos Destacados</h2>
+    {% for rec in logros %}
+    <div class="section" style="page-break-inside: avoid;">
+        <div class="item-title">{{ rec.descripcionreconocimiento }}</div>
+        <div class="item-meta">{{ rec.entidadpatrocinadora }} | Fecha: {{ rec.fechareconocimiento }}</div>
+        {% if rec.imagen_preview %}
+        <div class="cert-container">
+            <img src="{{ rec.imagen_preview.url }}" class="cert-img">
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- PRODUCTOS ACADÉMICOS -->
+    {% if academicos %}
+    <h2>Producción Académica</h2>
+    {% for acad in academicos %}
+    <div class="section">
+        <div class="item-title">{{ acad.nombrerecurso }}</div>
+        <div class="item-meta">Clasificación: {{ acad.clasificador }}</div>
+        <div style="font-size: 9pt;">{{ acad.descripcion }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- VENTA DE GARAJE -->
+    {% if garage %}
+    <div style="page-break-before: always;"></div>
+    <h2>Catálogo de Artículos (Venta de Garaje)</h2>
+    <table class="garage-table">
+        {% for item in garage %}
+        {% if forloop.counter0|divisibleby:3 %}<tr>{% endif %}
+            <td class="garage-item">
+                {% if item.imagen %}
+                    <img src="{{ item.imagen.url }}" class="garage-img"><br>
+                {% endif %}
+                <div style="font-weight: bold; margin-top: 5px;">{{ item.nombreproducto }}</div>
+                <div class="price">${{ item.valordelbien }}</div>
+                <div style="font-size: 8pt; color: #777;">Estado: {{ item.estadoproducto }}</div>
+            </td>
+        {% if forloop.counter|divisibleby:3 or forloop.last %}</tr>{% endif %}
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <!-- PIE DE PÁGINA -->
+    <div id="footerContent" class="footer">
+        Hoja de Vida de {{ perfil.nombres }} {{ perfil.apellidos }} - Generado el {% now "d/m/Y" %}
     </div>
 
-    <script>
-        async function renderPDF(url, canvasId) {
-            try {
-                const loadingTask = pdfjsLib.getDocument(url);
-                const pdf = await loadingTask.promise;
-                const page = await pdf.getPage(1);
-                const viewport = page.getViewport({scale: 2.5}); 
-                const canvas = document.getElementById(canvasId);
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                await page.render({canvasContext: context, viewport: viewport}).promise;
-                
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                const imgElement = document.createElement('img');
-                imgElement.src = imgData;
-                imgElement.className = 'img-evidence';
-                imgElement.alt = "Documento renderizado";
-                canvas.parentNode.appendChild(imgElement);
-                canvas.remove(); 
-                return true;
-            } catch (e) { 
-                console.error("Error cargando PDF: " + url, e);
-                const container = document.getElementById(canvasId)?.parentNode;
-                if(container) container.style.display = "none";
-                return false;
-            }
-        }
-
-        window.onload = async function() {
-            const canvases = document.querySelectorAll('canvas');
-            const promises = Array.from(canvases).map(c => {
-                if(c.dataset.url) return renderPDF(c.dataset.url, c.id);
-            });
-            await Promise.all(promises);
-            setTimeout(() => {
-                const btn = document.getElementById('download-btn');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-file-pdf me-2"></i> DESCARGAR PDF';
-                document.getElementById('loading-overlay').style.display = 'none';
-            }, 1500);
-        };
-
-        function descargarPDFFinal() {
-            const element = document.getElementById('content-to-print');
-            const btn = document.getElementById('download-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> GENERANDO...';
-
-            const opt = {
-                margin: 0, 
-                filename: 'Portafolio_Alex_Samuel_Aragundi_Final.pdf',
-                image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true, 
-                    letterRendering: true, 
-                    backgroundColor: '#ffffff',
-                    scrollY: 0
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['css', 'legacy'] }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-file-pdf me-2"></i> DESCARGAR PDF';
-            });
-        }
-    </script>
 </body>
 </html>
