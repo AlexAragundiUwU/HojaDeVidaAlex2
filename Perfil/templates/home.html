@@ -88,9 +88,13 @@
     .card-title-custom { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.3rem; margin-bottom: 15px; color: #fff; text-transform: uppercase; }
     
     .summary-list { border-top: 1px solid #222; padding-top: 10px; }
-    .summary-list li { margin-bottom: 8px; color: #ccc; font-size: 0.85rem; font-family: 'Roboto Mono', monospace; border-left: 2px solid #333; padding-left: 10px; list-style: none; }
+    .summary-list li { margin-bottom: 8px; color: #ccc; font-size: 0.85rem; font-family: 'Roboto Mono', monospace; border-left: 2px solid #333; padding-left: 10px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
     .summary-card:hover .summary-list li { border-left-color: var(--neon-green); color: #fff; }
     
+    /* Botones pequeños en las listas */
+    .btn-icon-list { background: transparent; border: none; color: #555; font-size: 1rem; cursor: pointer; transition: 0.3s; padding: 0 5px; }
+    .btn-icon-list:hover { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
+
     .btn-link-cyber { color: #666; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #333; padding: 5px 15px; display: inline-block; margin-top: auto; transition: 0.3s; }
     .summary-card:hover .btn-link-cyber { border-color: var(--neon-green); color: var(--neon-green); }
     .btn-link-cyber:hover { background: var(--neon-green); color: #000 !important; }
@@ -161,7 +165,9 @@
             <h5 class="card-title-custom">Experiencia</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
                 {% for exp in resumen_exp %}
-                <li><strong>{{ exp.cargodesempenado }}</strong><br> @ {{ exp.nombrempresa }}</li>
+                <li style="display: block;">
+                    <strong>{{ exp.cargodesempenado }}</strong><br> @ {{ exp.nombrempresa }}
+                </li>
                 {% endfor %}
             </ul>
             <div class="mt-auto pt-3"><a href="{% url 'experiencia' %}" class="btn-link-cyber transition-link">VER HISTORIAL</a></div>
@@ -180,7 +186,15 @@
             <h5 class="card-title-custom">Cursos</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
                 {% for curso in resumen_cursos %}
-                <li>{{ curso.nombrecurso }}</li>
+                <li>
+                    <span class="text-truncate" style="max-width: 65%;">{{ curso.nombrecurso }}</span>
+                    {% if curso.certificado %}
+                    <div>
+                        <button onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" class="btn-icon-list" title="Ver Certificado"><i class="bi bi-eye"></i></button>
+                        <a href="{{ curso.certificado.url }}" download class="btn-icon-list" title="Descargar"><i class="bi bi-download"></i></a>
+                    </div>
+                    {% endif %}
+                </li>
                 {% endfor %}
             </ul>
             <div class="mt-auto pt-3"><a href="{% url 'cursos' %}" class="btn-link-cyber transition-link">VER CERTIFICADOS</a></div>
@@ -188,7 +202,7 @@
     </div>
     {% endif %}
 
-    <!-- 3. Logros - ARREGLADO: Nombre de variable corregido a resumen_rec -->
+    <!-- 3. Logros -->
     {% if perfil.mostrar_logros %}
     <div class="col-md-6 col-lg-4 section-wrapper">
         <div class="card summary-card text-center">
@@ -199,7 +213,15 @@
             <h5 class="card-title-custom">Logros</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
                 {% for rec in resumen_rec %}
-                <li>{{ rec.descripcionreconocimiento }}</li>
+                <li>
+                    <span class="text-truncate" style="max-width: 65%;">{{ rec.descripcionreconocimiento }}</span>
+                    {% if rec.certificado %}
+                    <div>
+                        <button onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" class="btn-icon-list" title="Ver Reconocimiento"><i class="bi bi-eye"></i></button>
+                        <a href="{{ rec.certificado.url }}" download class="btn-icon-list" title="Descargar"><i class="bi bi-download"></i></a>
+                    </div>
+                    {% endif %}
+                </li>
                 {% empty %}
                 <li class="text-muted italic">Sin registros para mostrar.</li>
                 {% endfor %}
@@ -220,7 +242,12 @@
             <h5 class="card-title-custom">Académicos</h5>
             <ul class="summary-list ps-0 mb-0 text-start">
                 {% for acad in resumen_acad %}
-                <li>{{ acad.nombrerecurso }}</li>
+                <li>
+                    <span class="text-truncate" style="max-width: 75%;">{{ acad.nombrerecurso }}</span>
+                    {% if acad.documento %}
+                        <button onclick="verArchivo('{{ acad.documento.url }}', '{{ acad.nombrerecurso }}')" class="btn-icon-list" title="Ver Documento"><i class="bi bi-eye"></i></button>
+                    {% endif %}
+                </li>
                 {% endfor %}
             </ul>
             <div class="mt-auto pt-3"><a href="{% url 'productos_academicos' %}" class="btn-link-cyber transition-link">VER BIBLIOTECA</a></div>
@@ -267,7 +294,25 @@
     {% endif %}
 </div>
 
-<!-- MODAL DE GENERACIÓN DE DOCUMENTO -->
+<!-- ================= MODALES ================= -->
+
+<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR) -->
+<div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-content-cyber">
+            <div class="modal-header modal-header-cyber">
+                <h5 class="modal-title" id="tituloVisor">Archivo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="height: 80vh;">
+                <!-- IFRAME MÁGICO: Muestra PDF, JPG, PNG -->
+                <iframe id="visorArchivo" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. MODAL GENERAR CV -->
 <div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content modal-content-cyber">
@@ -296,6 +341,22 @@
 </div>
 
 <script>
+    // Función para ver el archivo en el modal visor
+    function verArchivo(url, titulo) {
+        document.getElementById('tituloVisor').innerText = titulo;
+        var visor = document.getElementById('visorArchivo');
+        visor.src = url;
+        var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
+        myModal.show();
+        
+        // Limpiar al cerrar
+        var modalEl = document.getElementById('modalVisor');
+        modalEl.addEventListener('hidden.bs.modal', function (event) {
+            visor.src = "";
+        });
+    }
+
+    // Función para generar el CV
     function generarVistaPrevia() {
         let url = `{% url 'vista_previa_cv' %}?cv=true`;
         if (document.getElementById('checkExp').checked) url += "&experiencia=true";
@@ -313,3 +374,13 @@
     }
 </script>
 {% endblock %}
+```
+
+### 2. Comandos para Guardar y Subir
+
+No tienes que hacerlos uno por uno, puedes hacerlo todo en un solo bloque. Guarda el archivo en tu editor y luego ejecuta esto en tu terminal:
+
+```bash
+git add .
+git commit -m "Fix: Botones de ver y descargar en Home"
+git push origin main
