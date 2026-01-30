@@ -354,9 +354,10 @@
         visorContainer.innerHTML = ''; // Limpiar
 
         var extension = url.split('.').pop().toLowerCase();
+        var imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         
         // --- ESTRATEGIA PARA IMÁGENES (PNG, JPG) ---
-        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
+        if (imageExtensions.includes(extension)) {
             var img = document.createElement('img');
             img.src = url;
             img.className = "img-fluid";
@@ -365,11 +366,12 @@
             img.style.marginBottom = "auto";
             visorContainer.appendChild(img);
 
-            // BOTÓN DENTRO DEL MODAL PARA DESCARGAR COMO PDF
-            var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf";
+            // BOTÓN DENTRO DEL MODAL PARA DESCARGAR COMO PDF (CON FORCE DOWNLOAD)
+            var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf?fl_attachment";
+            
             var divBtn = document.createElement('div');
             divBtn.className = "p-3 w-100";
-            divBtn.innerHTML = `<a href="${pdfUrl}" target="_blank" class="btn btn-cyber w-50" download><i class="bi bi-file-pdf me-2"></i>Descargar como PDF</a>`;
+            divBtn.innerHTML = `<a href="${pdfUrl}" class="btn btn-cyber w-50"><i class="bi bi-file-pdf me-2"></i>Descargar como PDF</a>`;
             visorContainer.appendChild(divBtn);
         } 
         // --- ESTRATEGIA PARA PDFS ---
@@ -385,13 +387,16 @@
             divBtn.style.position = "absolute";
             divBtn.style.bottom = "10px";
             divBtn.style.width = "100%";
-            divBtn.innerHTML = `<a href="${url}" target="_blank" class="btn btn-sm btn-light shadow"><i class="bi bi-download me-2"></i>Descargar Original</a>`;
+            // Agregar fl_attachment al descargar para forzar guardado
+            divBtn.innerHTML = `<a href="${url}?fl_attachment" class="btn btn-sm btn-light shadow"><i class="bi bi-download me-2"></i>Descargar Original</a>`;
             
             visorContainer.appendChild(iframe);
             visorContainer.appendChild(divBtn);
         }
         else {
-             visorContainer.innerHTML = `<div class="p-5 text-white">No hay vista previa disponible.<br><br><a href="${url}" class="btn btn-cyber">Descargar Archivo</a></div>`;
+             // Cualquier otro, descarga directa con flag
+             var safeUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
+             visorContainer.innerHTML = `<div class="p-5 text-white">No hay vista previa disponible.<br><br><a href="${safeUrl}" class="btn btn-cyber">Descargar Archivo</a></div>`;
         }
 
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
@@ -407,13 +412,14 @@
         var extension = url.split('.').pop().toLowerCase();
         var imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         
-        // Si es imagen, le pedimos a Cloudinary que nos de el PDF
+        // Si es imagen, le pedimos a Cloudinary que nos de el PDF y FORZAMOS DESCARGA
         if (imageExtensions.includes(extension)) {
-            var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf";
+            var pdfUrl = url.substring(0, url.lastIndexOf('.')) + ".pdf?fl_attachment";
             window.open(pdfUrl, '_blank');
         } else {
-            // Si ya es PDF u otro, lo bajamos normal
-            window.open(url, '_blank');
+            // Si ya es PDF u otro, lo bajamos normal PERO forzando descarga
+            var safeUrl = url.includes("?") ? url + "&fl_attachment" : url + "?fl_attachment";
+            window.open(safeUrl, '_blank');
         }
     }
 
