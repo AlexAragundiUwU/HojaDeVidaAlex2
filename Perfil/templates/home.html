@@ -5,7 +5,7 @@
 
 {% block content %}
 <style>
-    /* Estilos Home Cyberpunk */
+    /* Estilos Home Cyberpunk - Limpieza Total */
     .hero-section { 
         background: #0a0a0a; 
         padding: 3rem; 
@@ -297,7 +297,7 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL DE PREVISUALIZACIÓN (MODIFICADO PARA JPG) -->
+<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR NATIVO) -->
 <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -306,7 +306,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0 text-center" id="visorContainer" style="min-height: 50vh; background: #000; overflow: auto;">
-                <!-- El contenido (imagen) se inserta vía JS -->
+                <!-- El contenido se inserta vía JS -->
             </div>
         </div>
     </div>
@@ -342,39 +342,35 @@
 
 <script>
     function verArchivo(url, titulo) {
-        // 1. Forzar HTTPS
+        // 1. Forzar HTTPS para evitar bloqueo de contenido mixto
         if (url.startsWith('http://')) {
             url = url.replace('http://', 'https://');
         }
 
-        // 2. Configurar título
         document.getElementById('tituloVisor').innerText = titulo;
         var visorContainer = document.getElementById('visorContainer');
         visorContainer.innerHTML = ''; // Limpiar contenido previo
 
-        // 3. ESTRATEGIA "BALA DE PLATA": Cloudinary PDF -> JPG
+        // 2. ESTRATEGIA NATIVA: Usar <object>
         if (url.toLowerCase().endsWith('.pdf')) {
-            // Reemplazamos la extensión .pdf por .jpg en la URL de Cloudinary
-            // Esto obliga a Cloudinary a generar una imagen de la primera página
-            var imgUrl = url.substring(0, url.length - 4) + ".jpg";
+            var objectBtn = document.createElement('object');
+            objectBtn.data = url;
+            objectBtn.type = "application/pdf";
+            objectBtn.width = "100%";
+            objectBtn.height = "100%";
+            objectBtn.style.minHeight = "80vh";
             
-            // Creamos la imagen dinámicamente
-            var img = document.createElement('img');
-            img.src = imgUrl;
-            img.className = "img-fluid"; // Clase Bootstrap para ser responsiva
-            img.style.maxHeight = "80vh";
-            img.alt = "Previsualización del Documento";
+            // Fallback para móviles que no soportan embed
+            objectBtn.innerHTML = `<div class="d-flex align-items-center justify-content-center h-100 flex-column p-5">
+                                    <p class="text-white mb-3">Tu navegador no puede visualizar este PDF directamente.</p>
+                                    <a href="${url}" target="_blank" class="btn btn-cyber">
+                                        <i class="bi bi-download me-2"></i>Descargar Archivo
+                                    </a>
+                                   </div>`;
             
-            // Botón de respaldo
-            var divBtn = document.createElement('div');
-            divBtn.className = "p-3";
-            divBtn.innerHTML = `<a href="${url}" target="_blank" class="btn btn-sm btn-outline-light"><i class="bi bi-download me-2"></i>Descargar PDF Original</a>`;
-
-            visorContainer.appendChild(img);
-            visorContainer.appendChild(divBtn);
-
+            visorContainer.appendChild(objectBtn);
         } else {
-            // Si ya es imagen, mostrarla directo
+            // Si es imagen (JPG, PNG), mostrarla directo
             var img = document.createElement('img');
             img.src = url;
             img.className = "img-fluid";
@@ -382,7 +378,7 @@
             visorContainer.appendChild(img);
         }
 
-        // 4. Mostrar Modal
+        // 3. Mostrar Modal
         var myModal = new bootstrap.Modal(document.getElementById('modalVisor'));
         myModal.show();
     }
