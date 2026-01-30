@@ -183,11 +183,11 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ curso.nombrecurso }}</span>
                     {% if curso.certificado %}
                     <div>
-                        <!-- Botón Visor con nuevo script -->
+                        <!-- Botón Visor -->
                         <button class="btn-icon-list" onclick="verArchivo('{{ curso.certificado.url }}', '{{ curso.nombrecurso }}')" title="Ver Certificado">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <!-- Botón Descarga Directa -->
+                        <!-- Botón Descarga -->
                         <a href="{{ curso.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar" download>
                             <i class="bi bi-download"></i>
                         </a>
@@ -215,9 +215,11 @@
                     <span class="text-truncate" style="max-width: 65%;">{{ rec.descripcionreconocimiento }}</span>
                     {% if rec.certificado %}
                     <div>
+                        <!-- Botón Visor -->
                         <button class="btn-icon-list" onclick="verArchivo('{{ rec.certificado.url }}', '{{ rec.institucion }}')" title="Ver Reconocimiento">
                             <i class="bi bi-eye"></i>
                         </button>
+                        <!-- Botón Descarga -->
                         <a href="{{ rec.certificado.url }}" target="_blank" class="btn-icon-list" title="Descargar" download>
                             <i class="bi bi-download"></i>
                         </a>
@@ -297,7 +299,7 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR NATIVO <OBJECT>) -->
+<!-- 1. MODAL DE PREVISUALIZACIÓN (VISOR NATIVO <EMBED>) -->
 <div class="modal fade" id="modalVisor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-content-cyber">
@@ -357,23 +359,23 @@
 
         // 2. LÓGICA NATIVA (SIN TRUCOS)
         if (extension === 'pdf') {
-            // Usamos la etiqueta <object> estándar de HTML5
-            var objectEl = document.createElement('object');
-            objectEl.data = url;
-            objectEl.type = "application/pdf";
-            objectEl.width = "100%";
-            objectEl.height = "100%";
-            objectEl.style.minHeight = "75vh";
+            // Usamos la etiqueta <embed> estándar de HTML5
+            var embedTag = document.createElement('embed');
+            embedTag.src = url;
+            embedTag.type = "application/pdf";
+            embedTag.width = "100%";
+            embedTag.height = "100%";
+            embedTag.style.minHeight = "75vh";
             
             // Contenido de respaldo (Fallback) si el navegador no soporta PDF
-            objectEl.innerHTML = `
+            embedTag.innerHTML = `
                 <div class="d-flex flex-column align-items-center justify-content-center h-100 text-white">
                     <p>Tu navegador no puede visualizar este PDF aquí.</p>
                     <a href="${url}" target="_blank" class="btn btn-cyber">Abrir PDF en nueva pestaña</a>
                 </div>
             `;
             
-            visorContainer.appendChild(objectEl);
+            visorContainer.appendChild(embedTag);
         } else {
             // Si es imagen, la mostramos normal
             var img = document.createElement('img');
@@ -418,14 +420,3 @@
     }
 </script>
 {% endblock %}
-```
-
-### Comandos para actualizar:
-
-```bash
-git add .
-git commit -m "Fix final: Visor de PDF nativo con etiqueta Object"
-git push origin main
-```
-
-**Nota:** Esta solución confía en el navegador del usuario. Si estás en un celular, a veces el PDF no se incrusta, pero para eso dejé el botón de "Abrir en nueva pestaña" dentro del visor y el botón de descarga abajo. ¡Es lo más seguro!
