@@ -1,9 +1,9 @@
-# ... (deja las líneas de pip install, collectstatic y migrate como están)
+# ... (mantén las líneas de pip, collectstatic y migrate)
 
-# BORRAR Y RECREAR SUPERUSUARIO (Solución definitiva)
+# RECREACIÓN FORZADA CON CLAVE SEGURA
 echo "from django.contrib.auth import get_user_model; \
 User = get_user_model(); \
 User.objects.filter(username='Alex').delete(); \
-User.objects.create_superuser('Alex', 'alexaragundi3050@gmail.com', '1234'); \
-print('>>> USUARIO ALEX CREADO DESDE CERO CON CLAVE 1234 <<<')" \
+user = User.objects.create_superuser('Alex', 'alexaragundi3050@gmail.com', 'Alex123456'); \
+print('>>> USUARIO ALEX RECREADO CON CLAVE: Alex123456 <<<')" \
 | python manage.py shell
