@@ -22,7 +22,7 @@ class DatosPersonales(models.Model):
     licenciaconducir = models.CharField(max_length=20, blank=True, null=True)
     perfilactivo = models.IntegerField(blank=True, null=True)
     
-    # Visibilidad de secciones
+    # Visibilidad
     mostrar_experiencia = models.BooleanField(default=True)
     mostrar_cursos = models.BooleanField(default=True)
     mostrar_logros = models.BooleanField(default=True)
@@ -33,6 +33,8 @@ class DatosPersonales(models.Model):
     class Meta:
         managed = True
         db_table = 'datos_personales'
+        verbose_name = "Dato Personal"
+        verbose_name_plural = "Datos Personales"
     
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
@@ -50,6 +52,8 @@ class ExperienciaLaboral(models.Model):
     class Meta:
         managed = True
         db_table = 'experiencia_laboral'
+        verbose_name = "Experiencia Laboral"
+        verbose_name_plural = "Experiencia Laboral"
 
 class Reconocimientos(models.Model):
     idreconocimiento = models.AutoField(primary_key=True)
@@ -60,14 +64,14 @@ class Reconocimientos(models.Model):
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
     
-    # Campo PDF corregido
     rutacertificado = models.FileField(upload_to='reconocimientos/', blank=True, null=True, verbose_name="Certificado (PDF)")
-    # Tu idea: Imagen preview
     imagen_preview = models.ImageField(upload_to='reconocimientos/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
 
     class Meta:
         managed = True
         db_table = 'reconocimientos'
+        verbose_name = "Reconocimiento"
+        verbose_name_plural = "Reconocimientos"
 
 class CursosRealizados(models.Model):
     idcursorealizado = models.AutoField(primary_key=True)
@@ -83,15 +87,15 @@ class CursosRealizados(models.Model):
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
     
-    # Campo PDF corregido
     rutacertificado = models.FileField(upload_to='cursos/', blank=True, null=True, verbose_name="Certificado (PDF)")
     archivo_extra = models.FileField(upload_to='cursos/extra/', blank=True, null=True)
-    # Tu idea: Imagen preview
     imagen_preview = models.ImageField(upload_to='cursos/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
 
     class Meta:
         managed = True
         db_table = 'cursos_realizados'
+        verbose_name = "Curso Realizado"
+        verbose_name_plural = "Cursos Realizados"
 
 class ProductosAcademicos(models.Model):
     idproductoacademico = models.AutoField(primary_key=True)
@@ -105,6 +109,8 @@ class ProductosAcademicos(models.Model):
     class Meta:
         managed = True
         db_table = 'productos_academicos'
+        verbose_name = "Producto Académico"
+        verbose_name_plural = "Productos Académicos"
 
 class ProductosLaborales(models.Model):
     idproductolaboral = models.AutoField(primary_key=True)
@@ -118,6 +124,8 @@ class ProductosLaborales(models.Model):
     class Meta:
         managed = True
         db_table = 'productos_laborales'
+        verbose_name = "Proyecto Laboral"
+        verbose_name_plural = "Proyectos Laborales"
 
 class VentaGarage(models.Model):
     idventagarage = models.AutoField(primary_key=True)
@@ -132,3 +140,5 @@ class VentaGarage(models.Model):
     class Meta:
         managed = True
         db_table = 'venta_garage'
+        verbose_name = "Venta de Garaje"
+        verbose_name_plural = "Venta de Garaje"
