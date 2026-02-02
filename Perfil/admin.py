@@ -8,7 +8,7 @@ from .models import (
     CursosRealizados, ProductosAcademicos, ProductosLaborales, VentaGarage
 )
 
-# --- FORMULARIOS ---
+# --- FORMULARIOS CON VALIDACIONES ---
 class CursosRealizadosForm(forms.ModelForm):
     class Meta:
         model = CursosRealizados
@@ -39,11 +39,11 @@ class ExperienciaLaboralForm(forms.ModelForm):
 
 @admin.register(DatosPersonales)
 class DatosPersonalesAdmin(admin.ModelAdmin):
+    # ID al inicio (clickeable por defecto)
     list_display = ('idperfil', 'nombres', 'apellidos', 'email_contacto', 'perfilactivo')
-    list_editable = ('perfilactivo',)
+    list_editable = ('perfilactivo',) # Check rápido
     ordering = ('pk',)
-    # IMPORTANTE: Agregamos idperfil a readonly_fields para que se vea dentro del formulario
-    readonly_fields = ('idperfil',) 
+    readonly_fields = ('idperfil',) # Visible dentro del form
     
     fieldsets = (
         ('Información Principal', {
@@ -84,7 +84,6 @@ class ExperienciaLaboralAdmin(admin.ModelAdmin):
     list_display = ('idexperiencia', 'cargodesempenado', 'nombrempresa', 'fechainiciogestion', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    # Mostrar ID dentro del formulario
     readonly_fields = ('idexperiencia',)
 
 @admin.register(CursosRealizados)
@@ -93,7 +92,6 @@ class CursosRealizadosAdmin(admin.ModelAdmin):
     list_display = ('idcursorealizado', 'nombrecurso', 'entidadpatrocinadora', 'estado_archivos', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    # Mostrar ID dentro del formulario
     readonly_fields = ('idcursorealizado',)
 
     def estado_archivos(self, obj):
@@ -107,7 +105,6 @@ class ReconocimientosAdmin(admin.ModelAdmin):
     list_display = ('idreconocimiento', 'descripcionreconocimiento', 'entidadpatrocinadora', 'estado_archivos', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    # Mostrar ID dentro del formulario
     readonly_fields = ('idreconocimiento',)
 
     def estado_archivos(self, obj):
@@ -121,7 +118,6 @@ class ProductosAcademicosAdmin(admin.ModelAdmin):
     list_display = ('idproductoacademico', 'nombrerecurso', 'clasificador', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    # Mostrar ID dentro del formulario
     readonly_fields = ('idproductoacademico',)
 
 @admin.register(ProductosLaborales)
@@ -129,7 +125,6 @@ class ProductosLaboralesAdmin(admin.ModelAdmin):
     list_display = ('idproductolaboral', 'nombreproducto', 'fechaproducto', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    # Mostrar ID dentro del formulario
     readonly_fields = ('idproductolaboral',)
 
 @admin.register(VentaGarage)
@@ -138,7 +133,6 @@ class VentaGarageAdmin(admin.ModelAdmin):
     list_filter = ('estadoproducto',)
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    # Mostrar ID dentro del formulario
     readonly_fields = ('idventagarage',)
 
 # Títulos del Admin
