@@ -39,11 +39,10 @@ class ExperienciaLaboralForm(forms.ModelForm):
 
 @admin.register(DatosPersonales)
 class DatosPersonalesAdmin(admin.ModelAdmin):
-    # ID al inicio (clickeable por defecto)
     list_display = ('idperfil', 'nombres', 'apellidos', 'email_contacto', 'perfilactivo')
-    list_editable = ('perfilactivo',) # Check rápido
+    list_editable = ('perfilactivo',)
     ordering = ('pk',)
-    readonly_fields = ('idperfil',) # Visible dentro del form
+    # Eliminado readonly_fields para permitir edición del ID
     
     fieldsets = (
         ('Información Principal', {
@@ -84,7 +83,7 @@ class ExperienciaLaboralAdmin(admin.ModelAdmin):
     list_display = ('idexperiencia', 'cargodesempenado', 'nombrempresa', 'fechainiciogestion', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    readonly_fields = ('idexperiencia',)
+    # Eliminado readonly_fields
 
 @admin.register(CursosRealizados)
 class CursosRealizadosAdmin(admin.ModelAdmin):
@@ -92,7 +91,7 @@ class CursosRealizadosAdmin(admin.ModelAdmin):
     list_display = ('idcursorealizado', 'nombrecurso', 'entidadpatrocinadora', 'estado_archivos', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    readonly_fields = ('idcursorealizado',)
+    # Eliminado readonly_fields
 
     def estado_archivos(self, obj):
         img = "✅ PNG" if obj.imagen_preview else "❌ Sin PNG"
@@ -105,7 +104,7 @@ class ReconocimientosAdmin(admin.ModelAdmin):
     list_display = ('idreconocimiento', 'descripcionreconocimiento', 'entidadpatrocinadora', 'estado_archivos', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    readonly_fields = ('idreconocimiento',)
+    # Eliminado readonly_fields
 
     def estado_archivos(self, obj):
         img = "✅ PNG" if obj.imagen_preview else "❌ Sin PNG"
@@ -118,14 +117,14 @@ class ProductosAcademicosAdmin(admin.ModelAdmin):
     list_display = ('idproductoacademico', 'nombrerecurso', 'clasificador', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    readonly_fields = ('idproductoacademico',)
+    # Eliminado readonly_fields
 
 @admin.register(ProductosLaborales)
 class ProductosLaboralesAdmin(admin.ModelAdmin):
     list_display = ('idproductolaboral', 'nombreproducto', 'fechaproducto', 'activarparaqueseveaenfront')
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    readonly_fields = ('idproductolaboral',)
+    # Eliminado readonly_fields
 
 @admin.register(VentaGarage)
 class VentaGarageAdmin(admin.ModelAdmin):
@@ -133,7 +132,7 @@ class VentaGarageAdmin(admin.ModelAdmin):
     list_filter = ('estadoproducto',)
     list_editable = ('activarparaqueseveaenfront',)
     ordering = ('pk',)
-    readonly_fields = ('idventagarage',)
+    # Eliminado readonly_fields
 
 # Títulos del Admin
 admin.site.site_header = "Panel de Administración"

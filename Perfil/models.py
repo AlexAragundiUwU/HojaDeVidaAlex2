@@ -1,7 +1,8 @@
 from django.db import models
 
 class DatosPersonales(models.Model):
-    idperfil = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField para que sea editable
+    idperfil = models.IntegerField(primary_key=True, verbose_name="ID Perfil")
     nombres = models.CharField(max_length=100, null=True, blank=True)
     apellidos = models.CharField(max_length=100, null=True, blank=True)
     descripcionperfil = models.TextField(null=True, blank=True)
@@ -22,7 +23,6 @@ class DatosPersonales(models.Model):
     licenciaconducir = models.CharField(max_length=20, blank=True, null=True)
     perfilactivo = models.IntegerField(blank=True, null=True)
     
-    # Visibilidad
     mostrar_experiencia = models.BooleanField(default=True)
     mostrar_cursos = models.BooleanField(default=True)
     mostrar_logros = models.BooleanField(default=True)
@@ -33,14 +33,13 @@ class DatosPersonales(models.Model):
     class Meta:
         managed = True
         db_table = 'datos_personales'
-        verbose_name = "Dato Personal"
-        verbose_name_plural = "Datos Personales"
     
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
 
 class ExperienciaLaboral(models.Model):
-    idexperiencia = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField
+    idexperiencia = models.IntegerField(primary_key=True, verbose_name="ID Experiencia")
     nombrempresa = models.CharField(max_length=100, null=True, blank=True)
     cargodesempenado = models.CharField(max_length=100, null=True, blank=True)
     descripcionfunciones = models.TextField(null=True, blank=True)
@@ -52,11 +51,10 @@ class ExperienciaLaboral(models.Model):
     class Meta:
         managed = True
         db_table = 'experiencia_laboral'
-        verbose_name = "Experiencia Laboral"
-        verbose_name_plural = "Experiencia Laboral"
 
 class Reconocimientos(models.Model):
-    idreconocimiento = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField
+    idreconocimiento = models.IntegerField(primary_key=True, verbose_name="ID Reconocimiento")
     descripcionreconocimiento = models.CharField(max_length=255, null=True, blank=True)
     tiporeconocimiento = models.CharField(max_length=100, null=True, blank=True)
     entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
@@ -70,11 +68,10 @@ class Reconocimientos(models.Model):
     class Meta:
         managed = True
         db_table = 'reconocimientos'
-        verbose_name = "Reconocimiento"
-        verbose_name_plural = "Reconocimientos"
 
 class CursosRealizados(models.Model):
-    idcursorealizado = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField
+    idcursorealizado = models.IntegerField(primary_key=True, verbose_name="ID Curso")
     nombrecurso = models.CharField(max_length=100, db_column='nombrerecurso', null=True, blank=True)
     entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
     fechainicio = models.DateField(null=True, blank=True)
@@ -94,11 +91,10 @@ class CursosRealizados(models.Model):
     class Meta:
         managed = True
         db_table = 'cursos_realizados'
-        verbose_name = "Curso Realizado"
-        verbose_name_plural = "Cursos Realizados"
 
 class ProductosAcademicos(models.Model):
-    idproductoacademico = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField
+    idproductoacademico = models.IntegerField(primary_key=True, verbose_name="ID Académico")
     nombrerecurso = models.CharField(max_length=100, null=True, blank=True)
     clasificador = models.CharField(max_length=50, null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
@@ -109,11 +105,10 @@ class ProductosAcademicos(models.Model):
     class Meta:
         managed = True
         db_table = 'productos_academicos'
-        verbose_name = "Producto Académico"
-        verbose_name_plural = "Productos Académicos"
 
 class ProductosLaborales(models.Model):
-    idproductolaboral = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField
+    idproductolaboral = models.IntegerField(primary_key=True, verbose_name="ID Proyecto")
     nombreproducto = models.CharField(max_length=100, null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
     fechaproducto = models.DateField(null=True, blank=True)
@@ -124,11 +119,10 @@ class ProductosLaborales(models.Model):
     class Meta:
         managed = True
         db_table = 'productos_laborales'
-        verbose_name = "Proyecto Laboral"
-        verbose_name_plural = "Proyectos Laborales"
 
 class VentaGarage(models.Model):
-    idventagarage = models.AutoField(primary_key=True)
+    # CAMBIO: IntegerField
+    idventagarage = models.IntegerField(primary_key=True, verbose_name="ID Garaje")
     nombreproducto = models.CharField(max_length=100, null=True, blank=True)
     descripcionproducto = models.TextField(null=True, blank=True)
     valordelbien = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -140,5 +134,3 @@ class VentaGarage(models.Model):
     class Meta:
         managed = True
         db_table = 'venta_garage'
-        verbose_name = "Venta de Garaje"
-        verbose_name_plural = "Venta de Garaje"
