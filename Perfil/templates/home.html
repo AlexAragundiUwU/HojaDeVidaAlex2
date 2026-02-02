@@ -76,7 +76,12 @@
             <h5 class="section-title"><i class="bi bi-briefcase me-2"></i>Experiencia</h5>
             <ul class="item-list">
                 {% for exp in resumen_exp %}
-                <li><strong>{{ exp.cargodesempenado }}</strong><br><small class="text-muted">@ {{ exp.nombrempresa }}</small></li>
+                <li>
+                    <strong>{{ exp.cargodesempenado }}</strong><br>
+                    <small class="text-muted">@ {{ exp.nombrempresa }}</small><br>
+                    <small class="text-success">{{ exp.fechainiciogestion|date:"Y" }} - {% if exp.fechafingestion %}{{ exp.fechafingestion|date:"Y" }}{% else %}Actual{% endif %}</small>
+                    {% if exp.rutacertificado %}<i class="bi bi-file-earmark-check ms-1 text-info" title="Certificado disponible"></i>{% endif %}
+                </li>
                 {% endfor %}
             </ul>
             <a href="{% url 'experiencia' %}" class="btn-view-more">VER HISTORIAL</a>
@@ -118,16 +123,19 @@
     </div>
     {% endif %}
 
-    <!-- 4. ACADÉMICOS -->
+    <!-- 4. PRODUCTOS ACADÉMICOS -->
     {% if perfil.mostrar_academicos %}
     <div class="col-md-6 col-lg-4">
         <div class="card summary-card">
-            <a href="?ocultar=mostrar_academicos" class="btn-close-cyber">×</a>
+            <a href="?ocultar=mostrar_academicos" class="btn-close-cyber" title="Ocultar">×</a>
             <div class="count-badge">{{ total_acad }} RECURSOS</div>
-            <h5 class="section-title"><i class="bi bi-book me-2"></i>Académicos</h5>
+            <h5 class="section-title"><i class="bi bi-book me-2"></i>Productos Académicos</h5>
             <ul class="item-list">
                 {% for acad in resumen_acad %}
-                <li><strong>{{ acad.nombrerecurso }}</strong><br><small class="text-muted">{{ acad.clasificador }}</small></li>
+                <li>
+                    <strong>{{ acad.nombrerecurso }}</strong><br>
+                    <small class="text-success">{{ acad.fechainicio|date:"Y" }} - {{ acad.fechafin|date:"Y"|default:"Actual" }}</small>
+                </li>
                 {% endfor %}
             </ul>
             <a href="{% url 'productos_academicos' %}" class="btn-view-more">VER BIBLIOTECA</a>
@@ -170,7 +178,7 @@
     {% endif %}
 </div>
 
-<!-- MODAL GENERADOR DE CV (Filtros corregidos) -->
+<!-- MODAL GENERADOR DE CV -->
 <div class="modal fade" id="downloadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-cyber">

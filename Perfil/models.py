@@ -48,6 +48,10 @@ class ExperienciaLaboral(models.Model):
     fechafingestion = models.DateField(null=True, blank=True)
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
+    
+    # NUEVOS CAMPOS: Soporte para PDF y Vista Previa en Experiencia
+    rutacertificado = models.FileField(upload_to='experiencia/', blank=True, null=True, verbose_name="Certificado Laboral (PDF)")
+    imagen_preview = models.ImageField(upload_to='experiencia/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
 
     class Meta:
         managed = True
@@ -104,7 +108,10 @@ class ProductosAcademicos(models.Model):
     descripcion = models.TextField(null=True, blank=True)
     fechainicio = models.DateField(null=True, blank=True, verbose_name="Fecha Inicio")
     fechafin = models.DateField(null=True, blank=True, verbose_name="Fecha Fin")
-    documento = models.FileField(upload_to='academicos/', blank=True, null=True)
+    
+    documento = models.FileField(upload_to='academicos/', blank=True, null=True, verbose_name="Documento (PDF)")
+    imagen_preview = models.ImageField(upload_to='academicos/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
+    
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
 
