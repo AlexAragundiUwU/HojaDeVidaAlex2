@@ -81,6 +81,7 @@ class ExperienciaLaboral(models.Model):
         db_table = 'experiencia_laboral'
         verbose_name = "Experiencia Laboral"
         verbose_name_plural = "Experiencia Laboral"
+        ordering = ['-fechainiciogestion']
 
 class Reconocimientos(models.Model):
     idreconocimiento = models.PositiveIntegerField(
@@ -102,6 +103,7 @@ class Reconocimientos(models.Model):
         db_table = 'reconocimientos'
         verbose_name = "Reconocimiento"
         verbose_name_plural = "Reconocimientos"
+        ordering = ['-fechareconocimiento']
 
 class CursosRealizados(models.Model):
     idcursorealizado = models.PositiveIntegerField(
@@ -133,6 +135,7 @@ class CursosRealizados(models.Model):
         db_table = 'cursos_realizados'
         verbose_name = "Curso Realizado"
         verbose_name_plural = "Cursos Realizados"
+        ordering = ['-fechafin']
 
 class ProductosAcademicos(models.Model):
     idproductoacademico = models.PositiveIntegerField(
@@ -156,6 +159,7 @@ class ProductosAcademicos(models.Model):
         db_table = 'productos_academicos'
         verbose_name = "Producto Académico"
         verbose_name_plural = "Productos Académicos"
+        ordering = ['-fechafin']
 
 class ProductosLaborales(models.Model):
     idproductolaboral = models.PositiveIntegerField(
@@ -174,6 +178,7 @@ class ProductosLaborales(models.Model):
         db_table = 'productos_laborales'
         verbose_name = "Proyecto Laboral"
         verbose_name_plural = "Proyectos Laborales"
+        ordering = ['-fechaproducto']
 
 class VentaGarage(models.Model):
     idventagarage = models.PositiveIntegerField(
