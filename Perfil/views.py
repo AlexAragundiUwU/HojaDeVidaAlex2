@@ -57,10 +57,10 @@ def home(request):
 
     context = {
         'perfil': perfil,
-        'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion')[:3] if perfil else [],
+        # Ordenado por fecha de fin descendente (el más reciente primero)
+        'resumen_exp': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafingestion', '-fechainiciogestion')[:3] if perfil else [],
         'resumen_cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')[:3] if perfil else [],
         'resumen_rec': Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechareconocimiento')[:3] if perfil else [],
-        # Cambio: de '-pk' a '-fechafin' para orden cronológico real
         'resumen_acad': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')[:3] if perfil else [],
         'resumen_lab': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechaproducto')[:3] if perfil else [],
         'resumen_garage': VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)[:5] if perfil else [],
@@ -78,7 +78,8 @@ def vista_previa_cv(request):
     context = {'perfil': perfil}
 
     if request.GET.get('experiencia') == 'true': 
-        context['experiencias'] = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion')
+        # Orden cronológico descendente para el PDF
+        context['experiencias'] = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafingestion', '-fechainiciogestion')
         
     if request.GET.get('cursos') == 'true': 
         context['cursos'] = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')
@@ -93,7 +94,6 @@ def vista_previa_cv(request):
         context['garage'] = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True)
     
     if request.GET.get('academicos') == 'true': 
-        # Cambio: de '-pk' a '-fechafin' para orden cronológico real en el PDF
         context['academicos'] = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin')
 
     template = get_template('cv_print.html')
@@ -111,12 +111,12 @@ def vista_previa_cv(request):
 # Vistas de detalle
 def experiencia(request):
     perfil = get_active_profile()
-    datos = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechainiciogestion') if perfil else []
+    # Aplicación de orden cronológico descendente: Mayor año de fin primero
+    datos = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafingestion', '-fechainiciogestion') if perfil else []
     return render(request, 'experiencia.html', {'datos': datos, 'perfil': perfil})
 
 def productos_academicos(request):
     perfil = get_active_profile()
-    # Cambio: de '-pk' a '-fechafin' para orden cronológico real en la página de productos académicos
     datos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil, activarparaqueseveaenfront=True).order_by('-fechafin') if perfil else []
     return render(request, 'productos_academicos.html', {'datos': datos, 'perfil': perfil})
 
