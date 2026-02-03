@@ -1,7 +1,12 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 class DatosPersonales(models.Model):
-    idperfil = models.IntegerField(primary_key=True, verbose_name="ID Perfil")
+    # PositiveIntegerField fuerza a que el navegador y Django solo acepten 0 o más
+    idperfil = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Perfil"
+    )
     nombres = models.CharField(max_length=100, null=True, blank=True)
     apellidos = models.CharField(max_length=100, null=True, blank=True)
     descripcionperfil = models.TextField(null=True, blank=True)
@@ -20,7 +25,11 @@ class DatosPersonales(models.Model):
     sexo = models.CharField(max_length=20, blank=True, null=True)
     estadocivil = models.CharField(max_length=20, blank=True, null=True)
     licenciaconducir = models.CharField(max_length=20, blank=True, null=True)
-    perfilactivo = models.IntegerField(blank=True, null=True)
+    perfilactivo = models.PositiveIntegerField(
+        blank=True, 
+        null=True, 
+        verbose_name="Perfil Activo (0 o 1)"
+    )
     
     # Visibilidad
     mostrar_experiencia = models.BooleanField(default=True)
@@ -34,13 +43,16 @@ class DatosPersonales(models.Model):
         managed = True
         db_table = 'datos_personales'
         verbose_name = "Dato Personal"
-        verbose_name_plural = "Datos Personales"
+        verbose_name_plural = "Datos Personales" # Corregido plural
     
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
 
 class ExperienciaLaboral(models.Model):
-    idexperiencia = models.IntegerField(primary_key=True, verbose_name="ID Experiencia")
+    idexperiencia = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Experiencia"
+    )
     nombrempresa = models.CharField(max_length=100, null=True, blank=True)
     cargodesempenado = models.CharField(max_length=100, null=True, blank=True)
     descripcionfunciones = models.TextField(null=True, blank=True)
@@ -49,7 +61,6 @@ class ExperienciaLaboral(models.Model):
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
     activarparaqueseveaenfront = models.BooleanField(default=True)
     
-    # NUEVOS CAMPOS: Soporte para PDF y Vista Previa en Experiencia
     rutacertificado = models.FileField(upload_to='experiencia/', blank=True, null=True, verbose_name="Certificado Laboral (PDF)")
     imagen_preview = models.ImageField(upload_to='experiencia/previews/', blank=True, null=True, verbose_name="Vista Previa (PNG/JPG)")
 
@@ -57,10 +68,13 @@ class ExperienciaLaboral(models.Model):
         managed = True
         db_table = 'experiencia_laboral'
         verbose_name = "Experiencia Laboral"
-        verbose_name_plural = "Experiencia Laboral"
+        verbose_name_plural = "Experiencia Laboral" # Corregido plural
 
 class Reconocimientos(models.Model):
-    idreconocimiento = models.IntegerField(primary_key=True, verbose_name="ID Reconocimiento")
+    idreconocimiento = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Reconocimiento"
+    )
     descripcionreconocimiento = models.CharField(max_length=255, null=True, blank=True)
     tiporeconocimiento = models.CharField(max_length=100, null=True, blank=True)
     entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
@@ -75,15 +89,22 @@ class Reconocimientos(models.Model):
         managed = True
         db_table = 'reconocimientos'
         verbose_name = "Reconocimiento"
-        verbose_name_plural = "Reconocimientos"
+        verbose_name_plural = "Reconocimientos" # Corregido plural
 
 class CursosRealizados(models.Model):
-    idcursorealizado = models.IntegerField(primary_key=True, verbose_name="ID Curso")
+    idcursorealizado = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Curso"
+    )
     nombrecurso = models.CharField(max_length=100, db_column='nombrerecurso', null=True, blank=True)
     entidadpatrocinadora = models.CharField(max_length=100, null=True, blank=True)
     fechainicio = models.DateField(null=True, blank=True)
     fechafin = models.DateField(null=True, blank=True)
-    totalhoras = models.IntegerField(null=True, blank=True)
+    totalhoras = models.PositiveIntegerField(
+        null=True, 
+        blank=True, 
+        verbose_name="Total Horas"
+    )
     descripcioncurso = models.TextField(blank=True, null=True)
     nombrecontactoauspicia = models.CharField(max_length=100, blank=True, null=True)
     telefonocontactoauspicia = models.CharField(max_length=20, blank=True, null=True)
@@ -99,10 +120,13 @@ class CursosRealizados(models.Model):
         managed = True
         db_table = 'cursos_realizados'
         verbose_name = "Curso Realizado"
-        verbose_name_plural = "Cursos Realizados"
+        verbose_name_plural = "Cursos Realizados" # Corregido plural
 
 class ProductosAcademicos(models.Model):
-    idproductoacademico = models.IntegerField(primary_key=True, verbose_name="ID Académico")
+    idproductoacademico = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Académico"
+    )
     nombrerecurso = models.CharField(max_length=100, null=True, blank=True)
     clasificador = models.CharField(max_length=50, null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
@@ -119,10 +143,13 @@ class ProductosAcademicos(models.Model):
         managed = True
         db_table = 'productos_academicos'
         verbose_name = "Producto Académico"
-        verbose_name_plural = "Productos Académicos"
+        verbose_name_plural = "Productos Académicos" # Corregido plural
 
 class ProductosLaborales(models.Model):
-    idproductolaboral = models.IntegerField(primary_key=True, verbose_name="ID Proyecto")
+    idproductolaboral = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Proyecto"
+    )
     nombreproducto = models.CharField(max_length=100, null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
     fechaproducto = models.DateField(null=True, blank=True)
@@ -134,13 +161,23 @@ class ProductosLaborales(models.Model):
         managed = True
         db_table = 'productos_laborales'
         verbose_name = "Proyecto Laboral"
-        verbose_name_plural = "Proyectos Laborales"
+        verbose_name_plural = "Proyectos Laborales" # Corregido plural
 
 class VentaGarage(models.Model):
-    idventagarage = models.IntegerField(primary_key=True, verbose_name="ID Garaje")
+    idventagarage = models.PositiveIntegerField(
+        primary_key=True, 
+        verbose_name="ID Garaje"
+    )
     nombreproducto = models.CharField(max_length=100, null=True, blank=True)
     descripcionproducto = models.TextField(null=True, blank=True)
-    valordelbien = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    valordelbien = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(0)], # DecimalField requiere validator para el mínimo
+        verbose_name="Valor del Bien"
+    )
     estadoproducto = models.CharField(max_length=50, null=True, blank=True)
     imagen = models.ImageField(upload_to='garage/', blank=True, null=True)
     idperfilconqueestaactivo = models.ForeignKey(DatosPersonales, models.DO_NOTHING, db_column='idperfilconqueestaactivo', blank=True, null=True)
@@ -150,4 +187,4 @@ class VentaGarage(models.Model):
         managed = True
         db_table = 'venta_garage'
         verbose_name = "Venta de Garaje"
-        verbose_name_plural = "Venta de Garaje"
+        verbose_name_plural = "Venta de Garaje" # Corregido plural
