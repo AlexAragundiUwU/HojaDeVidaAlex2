@@ -9,7 +9,6 @@ def validar_no_futuro(value):
         raise ValidationError('La fecha no puede ser una fecha futura.')
 
 class DatosPersonales(models.Model):
-    # PositiveIntegerField fuerza a que el navegador y Django solo acepten 0 o más
     idperfil = models.PositiveIntegerField(
         primary_key=True, 
         verbose_name="ID Perfil"
@@ -43,7 +42,6 @@ class DatosPersonales(models.Model):
         verbose_name="Perfil Activo (0 o 1)"
     )
     
-    # Visibilidad
     mostrar_experiencia = models.BooleanField(default=True)
     mostrar_cursos = models.BooleanField(default=True)
     mostrar_logros = models.BooleanField(default=True)
@@ -81,7 +79,7 @@ class ExperienciaLaboral(models.Model):
         db_table = 'experiencia_laboral'
         verbose_name = "Experiencia Laboral"
         verbose_name_plural = "Experiencia Laboral"
-        ordering = ['-fechainiciogestion']
+        ordering = ['-fechainiciogestion', '-idexperiencia']
 
 class Reconocimientos(models.Model):
     idreconocimiento = models.PositiveIntegerField(
@@ -103,7 +101,7 @@ class Reconocimientos(models.Model):
         db_table = 'reconocimientos'
         verbose_name = "Reconocimiento"
         verbose_name_plural = "Reconocimientos"
-        ordering = ['-fechareconocimiento']
+        ordering = ['-fechareconocimiento', '-idreconocimiento']
 
 class CursosRealizados(models.Model):
     idcursorealizado = models.PositiveIntegerField(
@@ -135,7 +133,7 @@ class CursosRealizados(models.Model):
         db_table = 'cursos_realizados'
         verbose_name = "Curso Realizado"
         verbose_name_plural = "Cursos Realizados"
-        ordering = ['-fechafin']
+        ordering = ['-fechafin', '-idcursorealizado']
 
 class ProductosAcademicos(models.Model):
     idproductoacademico = models.PositiveIntegerField(
@@ -159,7 +157,7 @@ class ProductosAcademicos(models.Model):
         db_table = 'productos_academicos'
         verbose_name = "Producto Académico"
         verbose_name_plural = "Productos Académicos"
-        ordering = ['-fechafin']
+        ordering = ['-fechafin', '-idproductoacademico']
 
 class ProductosLaborales(models.Model):
     idproductolaboral = models.PositiveIntegerField(
@@ -178,7 +176,7 @@ class ProductosLaborales(models.Model):
         db_table = 'productos_laborales'
         verbose_name = "Proyecto Laboral"
         verbose_name_plural = "Proyectos Laborales"
-        ordering = ['-fechaproducto']
+        ordering = ['-fechaproducto', '-idproductolaboral']
 
 class VentaGarage(models.Model):
     idventagarage = models.PositiveIntegerField(
