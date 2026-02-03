@@ -1,5 +1,12 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+from datetime import date
+
+def validar_no_futuro(value):
+    """Evita que se ingresen fechas posteriores al día de hoy."""
+    if value > date.today():
+        raise ValidationError('La fecha no puede ser una fecha futura.')
 
 class DatosPersonales(models.Model):
     # PositiveIntegerField fuerza a que el navegador y Django solo acepten 0 o más
@@ -20,8 +27,13 @@ class DatosPersonales(models.Model):
     direcciontrabajo = models.CharField(max_length=200, blank=True, null=True)
     numerocedula = models.CharField(max_length=20, blank=True, null=True)
     nacionalidad = models.CharField(max_length=50, blank=True, null=True)
-    fechanacimiento = models.DateField(blank=True, null=True)
-    lugarnacimiento = models.CharField(max_length=100, blank=True, null=True)
+    fechanacimiento = models.DateField(
+        blank=True, 
+        null=True, 
+        validators=[validar_no_futuro],
+        verbose_name="Fecha de Nacimiento"
+    )
+    lugarnacimiento = models.CharField(max_length=100, null=True, blank=True)
     sexo = models.CharField(max_length=20, blank=True, null=True)
     estadocivil = models.CharField(max_length=20, blank=True, null=True)
     licenciaconducir = models.CharField(max_length=20, blank=True, null=True)
@@ -43,7 +55,7 @@ class DatosPersonales(models.Model):
         managed = True
         db_table = 'datos_personales'
         verbose_name = "Dato Personal"
-        verbose_name_plural = "Datos Personales" # Corregido plural
+        verbose_name_plural = "Datos Personales"
     
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
@@ -68,7 +80,7 @@ class ExperienciaLaboral(models.Model):
         managed = True
         db_table = 'experiencia_laboral'
         verbose_name = "Experiencia Laboral"
-        verbose_name_plural = "Experiencia Laboral" # Corregido plural
+        verbose_name_plural = "Experiencia Laboral"
 
 class Reconocimientos(models.Model):
     idreconocimiento = models.PositiveIntegerField(
@@ -89,7 +101,7 @@ class Reconocimientos(models.Model):
         managed = True
         db_table = 'reconocimientos'
         verbose_name = "Reconocimiento"
-        verbose_name_plural = "Reconocimientos" # Corregido plural
+        verbose_name_plural = "Reconocimientos"
 
 class CursosRealizados(models.Model):
     idcursorealizado = models.PositiveIntegerField(
@@ -120,7 +132,7 @@ class CursosRealizados(models.Model):
         managed = True
         db_table = 'cursos_realizados'
         verbose_name = "Curso Realizado"
-        verbose_name_plural = "Cursos Realizados" # Corregido plural
+        verbose_name_plural = "Cursos Realizados"
 
 class ProductosAcademicos(models.Model):
     idproductoacademico = models.PositiveIntegerField(
@@ -143,7 +155,7 @@ class ProductosAcademicos(models.Model):
         managed = True
         db_table = 'productos_academicos'
         verbose_name = "Producto Académico"
-        verbose_name_plural = "Productos Académicos" # Corregido plural
+        verbose_name_plural = "Productos Académicos"
 
 class ProductosLaborales(models.Model):
     idproductolaboral = models.PositiveIntegerField(
@@ -161,7 +173,7 @@ class ProductosLaborales(models.Model):
         managed = True
         db_table = 'productos_laborales'
         verbose_name = "Proyecto Laboral"
-        verbose_name_plural = "Proyectos Laborales" # Corregido plural
+        verbose_name_plural = "Proyectos Laborales"
 
 class VentaGarage(models.Model):
     idventagarage = models.PositiveIntegerField(
@@ -175,7 +187,7 @@ class VentaGarage(models.Model):
         decimal_places=2, 
         null=True, 
         blank=True,
-        validators=[MinValueValidator(0)], # DecimalField requiere validator para el mínimo
+        validators=[MinValueValidator(0)], 
         verbose_name="Valor del Bien"
     )
     estadoproducto = models.CharField(max_length=50, null=True, blank=True)
@@ -187,4 +199,4 @@ class VentaGarage(models.Model):
         managed = True
         db_table = 'venta_garage'
         verbose_name = "Venta de Garaje"
-        verbose_name_plural = "Venta de Garaje" # Corregido plural
+        verbose_name_plural = "Venta de Garaje"
